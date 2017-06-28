@@ -1,0 +1,19 @@
+PS1="\u@ethminer-screen on \h:\w\$";
+clear;
+date;
+echo "Welcome to ethminer/screen on `cat /etc/hostname`";
+echo "";
+echo "The 'amdgpus' command will allow you to perform operations on all amdgpu-pro GPUs simultaneously."
+echo "Examples"
+echo "";
+echo "amdgpus set fans 255			- one time override, will be brought back down by the fan script";
+echo "amdgpus set fan_override 180		- static fan speed (0-255), will be observed by the fan script";
+echo "amdgpus set fan_override none		- removes any fan override, revert to temperature-based behaviour";
+echo "amdgpus set temp_target 55		- sets the GPU temperature to try to maintain (lower = faster fans)";
+echo "amdgpus set pp_sclk_od 10			- sets the GPU clock overdrive, 0-20% of clock speed";
+echo "amdgpus set pp_mclk_od 5			- sets the memory clock overdrive. Currently works only once per boot.";
+echo "amdgpus set pp_dpm_sclk 7			- turns off dynamic power management and runs the GPU in state 7 of 7";
+echo "amdgpus set pp_dpm_sclk auto		- turns on dynamic power management";
+echo "";
+echo "WARNING: the script will NOT sanity check your input. That's for you to do.";
+echo ""
