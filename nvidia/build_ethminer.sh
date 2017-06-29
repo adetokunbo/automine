@@ -11,22 +11,23 @@ ensure_bin_dir() {
     [[ -d $BIN_DIR ]] || mkdir -p $BIN_DIR
 }
 
-pull_fresh_cpp_ethereum() {
+pull_fresh_ethminer() {
     cd $REPO_DIR
     [[ -d cpp-ethereum ]] && rm -fR cpp-ethereum
-    git clone https://github.com/Genoil/cpp-ethereum/
+    [[ -d ethminer ]] && rm -fR ethminer
+    git clone https://github.com/ethereum-mining/ethminer
 }
 
-build_cpp_ethereum() {
-    cd $REPO_DIR/cpp-ethereum
+build_ethminer() {
+    cd $REPO_DIR/ethminer
     mkdir build
     cd build
-    cmake -DBUNDLE=cudaminer ..
-    make -j2
+    cmake .. -DETHASHCUDA=ON
+    cmake --build .
 }
 
 cp_to_bin() {
-    cp -v $REPO_DIR/cpp-ethereum/build/ethminer/ethminer $BIN_DIR
+    cp -v $REPO_DIR/ethminer/build/ethminer/ethminer $BIN_DIR
 }
 
 add_symlinks() {
@@ -36,8 +37,8 @@ add_symlinks() {
 set -e
 ensure_repo_dir
 ensure_bin_dir
-pull_fresh_cpp_ethereum
-build_cpp_ethereum
+pull_fresh_ethminer
+build_ethminer
 cp_to_bin
 add_symlinks
 
