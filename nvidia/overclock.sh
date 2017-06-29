@@ -33,18 +33,9 @@ perform_overclock() {
 
     # Update GPUs
     local max_card_index=$(expr $(nvidia-smi -L | wc -l) - 1)
-    local settings_cmd='/usr/bin/nvidia-settings -a'
-    for i in $(seq 0 $max_card_index)
+    for NVD_GPU_INDEX in $(seq 0 $max_card_index)
     do
-        echo "Updating card $i power_level=$NVD_POWER_LEVEL fan_speed=$NVD_FAN_SPEED"
-        echo "                 GPU Clock offset=$NVD_CLOCK_OFFSET Memory Offset=$NVD_MTR_OFFSET"
-        nvidia-smi -i ${i} -pm 1
-        nvidia-smi -i ${i} -pl $NVD_POWER_LEVEL
-        ${settings_cmd} [gpu:${i}]/GPUPowerMizerMode=1
-        ${settings_cmd} [gpu:${i}]/GPUFanControlState=1
-        ${settings_cmd} [fan:${i}]/GPUTargetFanSpeed=$NVD_FAN_SPEED
-        ${settings_cmd} [gpu:${i}]/GPUGraphicsClockOffset[3]=${NVD_CLOCK_OFFSET}
-        ${settings_cmd} [gpu:${i}]/GPUMemoryTransferRateOffset[3]=${NVD_MTR_OFFSET}
+        source $SCRIPT_DIR/overclock_one_gpu.sh
     done
 }
 
