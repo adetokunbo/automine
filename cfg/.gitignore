@@ -1,0 +1,7 @@
+# Ignore everything in this folder
+*
+
+# Except the README.md and the samples
+!README.md
+!127.0.0.1.*sample*
+!.gitignore
