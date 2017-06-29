@@ -1,0 +1,18 @@
+{
+    "nvidia": {
+        "GeForce GTX 1060 6GB": {
+            "clock_offset": 0,
+            "power_level": 100,
+            "mtr_offset": 500,
+            "fan_speed": 80
+        },
+        "GeForce GTX 970": {
+            "application_settings": "3505,1201",
+            "clock_offset": 0,
+            "power_level": 120,
+            "mtr_offset": 50,
+            "fan_speed": 70
+        }
+    }
+}
+
