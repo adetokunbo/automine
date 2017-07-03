@@ -26,7 +26,7 @@ $HOME/bin/ethminer -U \
     -S ${MAIN_POOL} \
     -FS ${FALLBACK_POOL}  \
     -O "$WALLET"."$WORKER" \
-    --cuda-grid-size 16384 \
-    --cuda-block-size 128 \
+    --cuda-grid-size 8192
+    --cuda-block-size 64 \
     --cuda-parallel-hash 8 \
     --farm-recheck 200
