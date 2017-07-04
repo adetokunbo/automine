@@ -65,3 +65,6 @@ pull_fresh_ethminer
 build_ethminer
 cp_to_bin
 add_symlinks
+
+# update .bashrc with functions that encode typical usage scenarios
+source $SCRIPT_DIR/update_bashrc.sh
