@@ -3,6 +3,9 @@
 # Write the username in your system here
 RIG_USER='FILL_THIS_IN'
 
+# For updating the linux kernel
+TARGET_KERNEL=4.8.0-54
+
 # "nvidia" or "amdgp"
 RIG_TYPE='FILL_THIS_IN'
 

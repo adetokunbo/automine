@@ -19,5 +19,7 @@ update_image() {
     sudo reboot
 }
 
-#update_image 4.10.0-22
-update_image 4.8.0-54
+# set -u: fail if a referenced environment variable is not set
+set -u
+update_image $TARGET_KERNEL
+set +u
