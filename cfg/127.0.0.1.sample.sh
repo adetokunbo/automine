@@ -25,6 +25,10 @@ WORKER='FILL_THIS_IN'
 MAIN_POOL=asia1.ethermine.org:4444
 FALLBACK_POOL=us2.ethermine.org:4444
 
+# Optionally, choose the value of --cuda-parallel-hash flag.  This can have an
+# an effect on the hash rate when mining with Nvidia cards
+CUDA_PARALLEL_HASH=4
+
 # NVIDIA overclock settings
 # These are sample overclocking parameters for Nvidia cards
 # Used in /nvidia/overclock.sh
