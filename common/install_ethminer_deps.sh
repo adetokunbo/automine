@@ -1,6 +1,6 @@
 #/bin/bash
 
-# Add the official ethereum ppa to take care of a lot of the dependencies
+# Add the official ethereum ppa to take care of a lot of the dependencies, even if they might not get used.
 sudo apt-get update
 sudo apt-get -y install software-properties-common
 sudo add-apt-repository -y ppa:ethereum/ethereum

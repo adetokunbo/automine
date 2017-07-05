@@ -1,18 +1,24 @@
-
 # Test if the miner screen session is present, switch to it if is.
-mnr_show_screen() {
+mnr_screen() {
     local em_screen=$(screen -ls | grep ethminer | awk {'print $1'})
-    [ -n $em_screen ] && screen -D -R
+    [ -z ${em_screen} ] || screen -D -R
 }
 
-# List the Nvidia PCI bus devices
-mnr_ls_nvidia() {
-    lspci -vvv | grep -A 20 NVIDIA
+# Start the miner in its screen session
+mnr_up() {
+    set -u
+    ~/bin/automine/${RIG_TYPE}/launch_screen_session.sh
+    set +u
 }
 
 # Shutdown the miner and its screen session
-mnr_shutdown_screen() {
-    echo "Shutting down the miners"
+mnr_down() {
+    echo "Shutting down the miner"
     killall -TERM ethminer >/dev/null 2>&1
     kill -TERM `screen -list | grep ethminer | cut -d \. -f 1 | awk {'print $1'}` >/dev/null 2>&1
+}
+
+# List the Nvidia PCI bus devices
+mnr_nvidia_devices() {
+    lspci -vvv | grep -A 20 NVIDIA
 }
