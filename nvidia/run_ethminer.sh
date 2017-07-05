@@ -22,11 +22,12 @@ set -u
 echo "Mining to ${WALLET}.${WORKER} at ${MAIN_POOL} || ${FALLBACK_POOL}"
 set +u
 
-$HOME/bin/ethminer -U \
+$HOME/bin/ethminer \
     -S ${MAIN_POOL} \
     -FS ${FALLBACK_POOL}  \
     -O "$WALLET"."$WORKER" \
+    -U \
     --cuda-grid-size 8192
     --cuda-block-size 64 \
-    --cuda-parallel-hash 8 \
+    --cuda-parallel-hash ${CUDA_PARALLEL_HASH:-8} \
     --farm-recheck 200
