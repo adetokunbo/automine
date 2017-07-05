@@ -13,7 +13,7 @@ import subprocess
 import sys
 
 
-_LIST_GPUS_CMD = "nvidia-smi --query-gpu=name,index --format=csv,noheader"
+_LIST_GPUS_CMD = "nvidia-smi --query-gpu=name,pci.sub_device_id,index --format=csv,noheader"
 
 
 def _sibling_path(name):
@@ -26,15 +26,19 @@ def perform_overclock(cfgs):
     """Perform the overclock."""
     gpus_with_index = subprocess.check_output(_LIST_GPUS_CMD.split())
     one_gpu_script = _sibling_path('overclock_one_gpu.sh')
-    for (name, index) in [l.split(',') for l in gpus_with_index.splitlines()]:
+    for (name, sub_device, index) in [l.split(', ') for l in gpus_with_index.splitlines()]:
         index = index.strip()
-        if not name in cfgs:
-            print("Skipped {0} at #{1}, no config set for it".format(name, index))
+        sub_device_spec = 'pci.sub_device_id:' + sub_device
+        by_name = cfgs.get(name)
+        by_spec = cfgs.get(sub_device_spec)
+        if by_name is None and by_spec is None:
+            print("Skipped {0}({1}) at #{2}, no config set for it".format(name, sub_device_spec, index))
         else:
-            print("Overclocking {0} at #{1}".format(name, index))
+            the_cfg = by_spec or by_name
+            print("Overclocking {0}({1}) at #{2}".format(name, sub_device_spec, index))
             child_env = dict(os.environ)
             child_env['NVD_GPU_INDEX'] = index
-            for name, value in iter(cfgs[name].items()):
+            for name, value in iter(the_cfg.items()):
                 child_env["NVD_{0}".format(name.upper())] = str(value)
             print(subprocess.check_output(one_gpu_script,
                                           executable='/bin/bash',

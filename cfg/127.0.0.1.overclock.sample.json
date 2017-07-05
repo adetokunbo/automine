@@ -12,6 +12,12 @@
             "power_level": 120,
             "mtr_offset": 50,
             "fan_speed": 70
+        },
+        "pci.sub_device_id:0x143819DA": {
+            "clock_offset": 200,
+            "power_level": 100,
+            "mtr_offset": 1600,
+            "fan_speed": 80
         }
     }
 }
