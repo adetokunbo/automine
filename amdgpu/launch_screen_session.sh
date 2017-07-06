@@ -1,7 +1,7 @@
 #!/bin/bash
 
 [ -f ~/.screenrc ] || cp -v $HOME/bin/automine/common/.screenrc ~/.screenrc
-BIN_DIR=$HOME/bin/automine/amdgpu
+BIN_DIR=$HOME/bin/automine/$RIG_TYPE
 
 echo 'Starting ethminer in a detached screen...'
 
@@ -17,9 +17,6 @@ echo -n "."; sleep 1
 
 # Run the miner
 /usr/bin/screen -S ethminer  -X screen -t ethminer $BIN_DIR/run_ethminer.sh
-
-# Let the desktop have priority for what little CPU it requires.
-renice -n -10 `pgrep -f ethminer`
 
 # Start our temperature / fan speed control loop - this is backgrounded and not
 # in screen, but we want it after ethminer and before anything reliant on it.
