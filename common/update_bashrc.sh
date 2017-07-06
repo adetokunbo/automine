@@ -7,7 +7,7 @@ add_rig_type() {
 }
 
 update_rig_type() {
-    sed --in-place='' -e s/export RIG_TYPE=.*/export RIG_TYPE=$RIG_TYPE/ ~/.bashrc
+    sed --in-place='' -e "s/export RIG_TYPE=.*/export RIG_TYPE=$RIG_TYPE/" ~/.bashrc
 }
 
 grep -q 'export RIG_TYPE' $HOME/.bashrc && update_rig_type || add_rig_type 

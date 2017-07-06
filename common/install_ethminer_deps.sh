@@ -17,7 +17,6 @@ sudo apt-get -y install \
      automake \
      build-essential \
      cmake \
-     cuda \
      git \
      libboost-all-dev \
      libcryptopp-dev \
@@ -37,3 +36,5 @@ sudo apt-get -y install \
      m4 \
      ocl-icd-libopencl1 \
      opencl-headers
+
+[ ${RIG_TYPE} == 'nvidia' ] && sudo apt-get -y install cuda
