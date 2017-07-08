@@ -6,8 +6,11 @@ RIG_USER='FILL_THIS_IN'
 # For updating the linux kernel
 TARGET_KERNEL=4.8.0-54
 
-# "nvidia" or "amdgp"
+# "nvidia" or "amdgpu"
 RIG_TYPE='FILL_THIS_IN'
+
+# For installing the nvidia driver
+CUDA_VERSION=ubuntu1604_8.0.61-1
 
 # Ethminer values
 # Your ETH wallet
