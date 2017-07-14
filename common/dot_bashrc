@@ -22,3 +22,21 @@ mnr_down() {
 mnr_nvidia_devices() {
     lspci -vvv | grep -A 20 NVIDIA
 }
+
+mnr_nvinfo_mini() {
+    nvidia-smi --query-gpu=index,name,pci.sub_device_id --format=csv
+}
+
+mnr_nvinfo_lots() {
+    nvidia-smi --query-gpu=index,name,pci.sub_device_id,clocks.max.sm,clocks.sm,clocks.max.mem,clocks.mem,power.limit,power.draw,power.min_limit,power.max_limit --format=csv
+}
+
+mnr_overclock_info() {
+   cat ~/bin/automine/overclock.json
+}
+
+mnr_node_cfg() {
+   cat ~/bin/automine/cfg.sh
+}
+
+
