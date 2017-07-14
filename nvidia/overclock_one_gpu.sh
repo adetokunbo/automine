@@ -19,7 +19,7 @@ perform_one_overclock() {
 
     nvidia-smi -i ${NVD_GPU_INDEX} -pm 1
     nvidia-smi -i ${NVD_GPU_INDEX} -pl $NVD_POWER_LEVEL
-    [ -z ${NVD_APPLICATION_SETTINGS+x} ] || nvidia-smi -i ${NVD_GPU_INDEX} -ac ${NVD_APPLICATION_SETTINGS}
+    [ -z ${NVD_APPLICATION_SETTINGS} ] || nvidia-smi -i ${NVD_GPU_INDEX} -ac ${NVD_APPLICATION_SETTINGS}
     ${settings_cmd} [gpu:${NVD_GPU_INDEX}]/GPUPowerMizerMode=1
     ${settings_cmd} [gpu:${NVD_GPU_INDEX}]/GPUFanControlState=1
     ${settings_cmd} [fan:${NVD_GPU_INDEX}]/GPUTargetFanSpeed=$NVD_FAN_SPEED
