@@ -6,7 +6,8 @@
 #
 # Usage:
 # ------
-# $ sudo DISPLAY=:0 $HOME/bin/automine/nvidia/overclock.sh
+# $ sudo $HOME/bin/automine/nvidia/overclock.sh  # uses default DISPLAY of :0
+# $ sudo DISPLAY=:1 $HOME/bin/automine/nvidia/overclock.sh # choose a different display 
 
 this_dir() {
     local script_path="${BASH_SOURCE[0]}"
