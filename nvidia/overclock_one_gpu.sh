@@ -2,14 +2,16 @@
 # Overclocks a single Nvidia GPU (nvidia-smi and nvidia-settings)
 #
 # Prequisites: should be run as root
-#              needs a X display running, and the DISPLAY variable set
+#              needs a X display running
 #
 # Usage:
 # ------
 # Intended to be used from overclock.sh and overclock.py
+# DISPLAY takes its value from the environment but defaults to ':0'
 
 perform_one_overclock() {
     NVD_APPLICATION_SETTINGS=${NVD_APPLICATION_SETTINGS:=''}
+    export DISPLAY=${DISPLAY:=':0'}
 
     set -u  # fail if any required NVD environment variables is not set
     local settings_cmd='/usr/bin/nvidia-settings -a'
