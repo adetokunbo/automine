@@ -1,5 +1,6 @@
 {
     "Solution found; Submitting to ${FALLBACK_POOL}": "${AUTOMINE_ALERT_DIR}/switched_to_fallback.txt",
     "unspecified launch failure" : "${AUTOMINE_ALERT_DIR}/detected_launch_failure.txt",
-    "an illegal memory access": "${AUTOMINE_ALERT_DIR}/detected_illegal_memory_access.txt"
+    "an illegal memory access": "${AUTOMINE_ALERT_DIR}/detected_illegal_memory_access.txt",
+    "0.00MH/s": "${AUTOMINE_ALERT_DIR}/unknown_crash.txt"
 }
