@@ -1,0 +1,9 @@
+[Unit]
+Description=Detect when any trigger file is changed
+
+[Path]
+PathChanged=%h/var/automine/triggers/switched_to_fallback.txt
+PathChanged=%h/var/automine/triggers/detected_launch_failure.txt
+
+[Install]
+WantedBy=default.target

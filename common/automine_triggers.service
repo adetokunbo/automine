@@ -1,0 +1,5 @@
+[Unit]
+Description=Restart the screen session in response to a trigger
+
+[Service]
+ExecStart=/bin/systemctl --user restart automine
