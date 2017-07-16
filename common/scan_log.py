@@ -8,10 +8,11 @@ maps them to the path of the trigger file to be updated when they are detected
 
 from __future__ import print_function
 
-from datetime import datetime
+from datetime import datetime, timedelta
 import json
 import os
 import sys
+import traceback
 
 
 def _sibling_path(name):
@@ -41,11 +42,13 @@ def _print(some_text):
         print(some_text, file=fh)
 
 
-_MAX_COUNT = 6
+_MAX_COUNT = 2
+_MIN_LOG_TIME = timedelta(0, 60)  # don't log some errors for the first minute
 
 
 def perform_scan(src, error_cfg):
     """Scan lines of input for the configured errors"""
+    start = datetime.now()
     count = 0
     while True:
         a_line = src.readline()
@@ -60,6 +63,11 @@ def perform_scan(src, error_cfg):
         now = datetime.now()
         for subst, trigger_path in iter(error_cfg.items()):
             if a_line.find(subst) == -1:
+                continue
+
+            # The 0.00MH/s scan is special; only record a crash if this is in
+            # the log after the first minute.
+            if subst.find('0.00MH/s') != -1 and (now - start) < _MIN_LOG_TIME:
                 continue
             open(trigger_path, 'a').write(now.strftime('%Y/%m/%D::%H:%M:%S\n'))
             _print("scan_log: done, wrote to {} at {}".format(trigger_path, now))
