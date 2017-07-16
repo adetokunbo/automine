@@ -6,16 +6,13 @@ mnr_screen() {
 
 # Start the miner in its screen session
 mnr_up() {
-    set -u
-    ~/bin/automine/${RIG_TYPE}/launch_screen_session.sh
-    set +u
+    systemctl --user start automine
 }
 
 # Shutdown the miner and its screen session
 mnr_down() {
     echo "Shutting down the miner"
-    killall -TERM ethminer >/dev/null 2>&1
-    kill -TERM `screen -list | grep ethminer | cut -d \. -f 1 | awk {'print $1'}` >/dev/null 2>&1
+    systemctl --user stop automine
 }
 
 # List the Nvidia PCI bus devices
@@ -39,4 +36,6 @@ mnr_node_cfg() {
    cat ~/bin/automine/cfg.sh
 }
 
-
+# Ensure that the alert directory is present
+export AUTOMINE_ALERT_DIR=$HOME/var/automine/triggers
+mkdir -p $AUTOMINE_ALERT_DIR

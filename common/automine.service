@@ -1,0 +1,8 @@
+[Unit]
+Description=Launch/Relaunch the screen session that runs the miner
+
+[Service]
+Type=forking
+RemainAfterExit=yes
+ExecStart=/bin/bash -c "%h/bin/automine/${RIG_TYPE}/launch_screen_session.sh"
+ExecStop=/bin/bash -c "%h/bin/automine/common/stop_screen_session.sh"

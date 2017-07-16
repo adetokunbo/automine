@@ -1,11 +1,13 @@
 #!/bin/bash
 
-[ -f ~/.screenrc ] || cp -v $HOME/bin/automine/common/.screenrc ~/.screenrc
 BIN_DIR=$HOME/bin/automine/$RIG_TYPE
 
 echo 'Starting ethminer in a detached screen...'
 
 # Terminate any existing ethminer processes or screens
+#
+# - for safety only; this should have been done already if this script is invoked via
+# its systemctl service
 killall -TERM ethminer >/dev/null 2>&1
 kill -TERM `screen -list | grep ethminer | cut -d \. -f 1 | awk {'print $1'}` >/dev/null 2>&1
 
