@@ -1,5 +1,5 @@
 [Unit]
-Description=Launch/Relaunch the screen session that runs the miner
+Description=the screen session that runs the miner
 
 [Service]
 Type=forking

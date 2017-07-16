@@ -37,6 +37,11 @@ detected_launch_failure() {
         && echo "$(date +%Y/%m/%d::%H:%M:%S)" >> $AUTOMINE_ALERT_DIR/detected_launch_failure.txt
 }
 
+detected_illegal_memory_access() {
+    grep -q "an illegal memory access" \
+        && echo "$(date +%Y/%m/%d::%H:%M:%S)" >> $AUTOMINE_ALERT_DIR/detected_illegal_memory_access.txt
+}
+
 $HOME/bin/ethminer \
     -S ${MAIN_POOL} \
     -FS ${FALLBACK_POOL}  \
@@ -46,4 +51,4 @@ $HOME/bin/ethminer \
     --cuda-block-size 64 \
     --cuda-parallel-hash ${CUDA_PARALLEL_HASH:-8} \
     --farm-recheck 200 \
-        | tee >(switched_to_fallback) >(detected_launch_failure)
+        | tee >(switched_to_fallback) >(detected_launch_failure) >(detected_illegal_memory_access)

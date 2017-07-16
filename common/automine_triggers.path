@@ -1,9 +1,10 @@
 [Unit]
-Description=Detect when any trigger file is changed
+Description=a mining trigger file was changed
 
 [Path]
 PathChanged=%h/var/automine/triggers/switched_to_fallback.txt
 PathChanged=%h/var/automine/triggers/detected_launch_failure.txt
+PathChanged=%h/var/automine/triggers/detected_illegal_memory_access.txt
 
 [Install]
 WantedBy=default.target
