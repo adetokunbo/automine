@@ -39,4 +39,6 @@ mnr_node_cfg() {
    cat ~/bin/automine/cfg.sh
 }
 
-
+# Ensure that the alert directory is present
+export AUTOMINE_ALERT_DIR=$HOME/var/automine/triggers
+mkdir -p $AUTOMINE_ALERT_DIR
