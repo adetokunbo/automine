@@ -22,24 +22,16 @@ set -u
 echo "Mining to ${WALLET}.${WORKER} at ${MAIN_POOL} || ${FALLBACK_POOL}"
 set +u
 
+
 # Monitor with simple alerts from grepping the logs.
 #
-# The logs of ethminer are piped through simple grep commands that append files
-# in the alert directory. These files are monitored by systemd which takes the
-# appropriate action, e.g, restart the miner.
-switched_to_fallback() {
-    grep -q "Solution found; Submitting to ${FALLBACK_POOL}" \
-        && echo "$(date +%Y/%m/%d::%H:%M:%S)" >> $AUTOMINE_ALERT_DIR/switched_to_fallback.txt
-}
-
-detected_launch_failure() {
-    grep -q "unspecified launch failure" \
-        && echo "$(date +%Y/%m/%d::%H:%M:%S)" >> $AUTOMINE_ALERT_DIR/detected_launch_failure.txt
-}
-
-detected_illegal_memory_access() {
-    grep -q "an illegal memory access" \
-        && echo "$(date +%Y/%m/%d::%H:%M:%S)" >> $AUTOMINE_ALERT_DIR/detected_illegal_memory_access.txt
+# The scan log tool performs a simple grep of known errors and updates files in
+# the alert directory when it detects them. These files are monitored by systemd
+# which takes the appropriate action, e.g, restart the miner.
+SCAN_LOG=$(dirname $SCRIPT_DIR)/common/scan_log.py
+echo "Scanning logs with $SCAN_LOG"
+scan_log() {
+    FALLBACK_POOL=$FALLBACK_POOL AUTOMINE_ALERT_DIR=$AUTOMINE_ALERT_DIR $SCAN_LOG
 }
 
 $HOME/bin/ethminer \
@@ -47,8 +39,7 @@ $HOME/bin/ethminer \
     -FS ${FALLBACK_POOL}  \
     -O "$WALLET"."$WORKER" \
     -U \
-    --cuda-grid-size 8192
+    --cuda-grid-size 8192 \
     --cuda-block-size 64 \
     --cuda-parallel-hash ${CUDA_PARALLEL_HASH:-8} \
-    --farm-recheck 200 \
-        | tee >(switched_to_fallback) >(detected_launch_failure) >(detected_illegal_memory_access)
+    --farm-recheck 200 | tee >(scan_log)
