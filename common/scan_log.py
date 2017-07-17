@@ -42,29 +42,35 @@ def read_cfg(cfg_path):
 
 
 def _print(some_text):
-    with open("/tmp/scan_log.out", "a") as fh:
-        print(some_text.encode('utf8'), file=fh)
+    with open("/tmp/scan_log.out", "a") as out:
+        print(some_text.encode('utf8'), file=out)
 
 
 _MAX_COUNT = 2
-_EARLIEST_TRIGGER = timedelta(0, 30)  # don't log some errors for the first minute
+_WAIT_FOR_A_BIT = timedelta(0, 30)  # don't trigger on any early logs
 _PRINT_PERIOD = 1000
 
 
 def perform_scan(src, error_cfg):
     """Scan lines of input for the configured errors"""
-    start = datetime.now()
+    start = datetime.utcnow()
     count = 0
     for subst, trigger_path in iter(error_cfg.items()):
         _print(u"scan_log: config: {} <- {}".format(trigger_path, subst))
 
     while True:
         a_line = src.readline()
-        if not a_line:  # EOF
+        if not a_line:  # EOF; scan until input ends
             break
-        now = datetime.now()
-        if (now - start) < _EARLIEST_TRIGGER:
+
+        # ignore early lines
+        now = datetime.utcnow()
+        if (now - start) < _WAIT_FOR_A_BIT:
             continue
+
+        # confirm the scan is working ok by:
+        #
+        # 1. log the initial few scanned lines
         a_line = a_line.strip()
         if not a_line:
             continue
@@ -74,17 +80,22 @@ def perform_scan(src, error_cfg):
                 _print(u"scan_log: scanned up to {} lines OK".format(count))
                 _print(u"scan_log: last line was {}".format(a_line))
 
-        # scan for the configured lines, halting the scan once an error occurs
+        # ...
+        # 2. logging random scanned lines
         if now.second % _PRINT_PERIOD == random.randint(0, _PRINT_PERIOD - 1):
             _print(u"scan_log: last line was {}".format(a_line))
+
+        # scan for the configured lines, halting the scan once an error occurs
         for subst, trigger_path in iter(error_cfg.items()):
             if a_line.find(subst) == -1:
                 continue
 
             # The 0.00MH/s scan is special; only record a crash if this is in
             # the log after the first minute.
-            open(trigger_path, 'a').write(now.strftime('%Y/%m/%D::%H:%M:%S\n'))
-            _print(u"scan_log: done, wrote to {} at {}".format(trigger_path, now))
+            timestamp = now.isoformat() + 'Z'
+            with open(trigger_path, 'a') as out:
+                print(timestamp, file=out)
+            _print(u"scan_log: done, wrote to {} at {}".format(trigger_path, timestamp))
             return  # exit once any error occurs
 
 def main():
@@ -103,7 +114,7 @@ def main():
                                                exc_traceback)))
         _print(str(err))
         sys.exit(1)
-    except Exception as err:
+    except Exception as err:  # pylint: disable=broad-except
         exc_type, exc_value, exc_traceback = sys.exc_info()
         _print(repr(traceback.format_exception(exc_type, exc_value,
                                                exc_traceback)))
