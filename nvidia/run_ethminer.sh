@@ -31,7 +31,8 @@ set +u
 SCAN_LOG=$(dirname $SCRIPT_DIR)/common/scan_log.py
 echo "Scanning logs with $SCAN_LOG"
 scan_log() {
-    FALLBACK_POOL=$FALLBACK_POOL AUTOMINE_ALERT_DIR=$AUTOMINE_ALERT_DIR $SCAN_LOG
+    # drop the port from FALLBACK_POOL, it's not present in the triggering log line
+    FALLBACK_POOL=${FALLBACK_POOL:0:$((${#FALLBACK_POOL}-5))} AUTOMINE_ALERT_DIR=$AUTOMINE_ALERT_DIR $SCAN_LOG
 }
 
 $HOME/bin/ethminer \
