@@ -29,12 +29,16 @@ cp_systemd_units() {
     cp -v ${here}/automine.service $systemd_dir
     cp -v ${here}/automine_triggers.service $systemd_dir
     cp -v ${here}/automine_triggers.path $systemd_dir
+    cp -v ${here}/automine_gpu_health.timer $systemd_dir
+    cp -v ${here}/automine_gpu_health.service $systemd_dir
 }
 
 # enable the systemd trigger services
 enable_and_start() {
     systemctl --user enable automine_triggers.path
     systemctl --user start automine_triggers.path
+    systemctl --user enable automine_gpu_health.timer
+    systemctl --user start automine_gpu_health.timer
 }
 
 set -e

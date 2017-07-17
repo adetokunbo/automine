@@ -1,0 +1,5 @@
+[Unit]
+Description=update the trigger file for any unhealthy gpu
+
+[Service]
+ExecStart=/bin/bash -c "%h/bin/automine/nvidia/gpu_health.py"

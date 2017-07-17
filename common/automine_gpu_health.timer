@@ -1,0 +1,8 @@
+[Unit]
+Description=check that the gpus are in good shape
+
+[Timer]
+OnCalendar=*-*-* *:00,15,30,45:00
+
+[Install]
+WantedBy=default.target
