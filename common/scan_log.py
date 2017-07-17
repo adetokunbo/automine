@@ -9,8 +9,10 @@ maps them to the path of the trigger file to be updated when they are detected
 from __future__ import print_function
 
 from datetime import datetime, timedelta
+import codecs
 import json
 import os
+import random
 import sys
 import traceback
 
@@ -34,16 +36,17 @@ def read_cfg(cfg_path):
             cfg_dict[new_key] = new_value
         return cfg_dict
     except KeyError as err:
-        raise ValueError('scan_log: Environment did not specify {}'.format(err))
+        raise ValueError(u'scan_log: Environment did not specify {}'.format(err))
 
 
 def _print(some_text):
     with open("/tmp/scan_log.out", "a") as fh:
-        print(some_text, file=fh)
+        print(some_text.encode('utf8'), file=fh)
 
 
 _MAX_COUNT = 2
-_MIN_LOG_TIME = timedelta(0, 60)  # don't log some errors for the first minute
+_EARLIEST_TRIGGER = timedelta(0, 30)  # don't log some errors for the first minute
+_PRINT_PERIOD = 1000
 
 
 def perform_scan(src, error_cfg):
@@ -54,23 +57,29 @@ def perform_scan(src, error_cfg):
         a_line = src.readline()
         if not a_line:  # EOF
             break
+        now = datetime.now()
+        if (now - start) < _EARLIEST_TRIGGER:
+            continue
+        a_line = a_line.strip()
+        if not a_line:
+            continue
         if count < _MAX_COUNT:  # print something to indicate scan is running ok
             count += 1
             if count == _MAX_COUNT:
-                _print("scan_log: scanned up to {} lines OK".format(count))
+                _print(u"scan_log: scanned up to {} lines OK".format(count))
+                _print(u"scan_log: last line was {}".format(a_line))
 
         # scan for the configured lines, halting the scan once an error occurs
-        now = datetime.now()
+        if now.second % _PRINT_PERIOD == random.randint(0, _PRINT_PERIOD - 1):
+            _print(u"scan_log: last line was {}".format(a_line))
         for subst, trigger_path in iter(error_cfg.items()):
             if a_line.find(subst) == -1:
                 continue
 
             # The 0.00MH/s scan is special; only record a crash if this is in
             # the log after the first minute.
-            if subst.find('0.00MH/s') != -1 and (now - start) < _MIN_LOG_TIME:
-                continue
             open(trigger_path, 'a').write(now.strftime('%Y/%m/%D::%H:%M:%S\n'))
-            _print("scan_log: done, wrote to {} at {}".format(trigger_path, now))
+            _print(u"scan_log: done, wrote to {} at {}".format(trigger_path, now))
             return  # exit once any error occurs
 
 def main():
@@ -80,9 +89,13 @@ def main():
         _print("No scan_log.json at {}, exiting".format(cfg_path))
         sys.exit(1)
     try:
-        perform_scan(sys.stdin, read_cfg(cfg_path))
+        reader = codecs.getreader('utf8')
+        perform_scan(reader(sys.stdin), read_cfg(cfg_path))
         sys.exit(1)  # indicate that the src program errored
     except ValueError as err:
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        _print(repr(traceback.format_exception(exc_type, exc_value,
+                                               exc_traceback)))
         _print(str(err))
         sys.exit(1)
 
