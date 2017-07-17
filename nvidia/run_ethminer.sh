@@ -42,4 +42,4 @@ $HOME/bin/ethminer \
     --cuda-grid-size 8192 \
     --cuda-block-size 64 \
     --cuda-parallel-hash ${CUDA_PARALLEL_HASH:-8} \
-    --farm-recheck 200 | tee >(scan_log)
+    --farm-recheck 200 2>&1 | tee >(scan_log)
