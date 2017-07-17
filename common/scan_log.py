@@ -28,6 +28,8 @@ def read_cfg(cfg_path):
     try:
         fallback_pool = os.environ['FALLBACK_POOL']
         automine_alert_dir = os.environ['AUTOMINE_ALERT_DIR']
+        _print(u"scan_log: config: {} == {}".format('AUTOMINE_ALERT_DIR', automine_alert_dir))
+        _print(u"scan_log: config: {} == {}".format('FALLBACK_POOL', fallback_pool))
         raw_dict = json.load(open(cfg_path))
         cfg_dict = {}
         for key, value in iter(raw_dict.items()):
@@ -53,6 +55,9 @@ def perform_scan(src, error_cfg):
     """Scan lines of input for the configured errors"""
     start = datetime.now()
     count = 0
+    for subst, trigger_path in iter(error_cfg.items()):
+        _print(u"scan_log: config: {} <- {}".format(trigger_path, subst))
+
     while True:
         a_line = src.readline()
         if not a_line:  # EOF
@@ -97,6 +102,11 @@ def main():
         _print(repr(traceback.format_exception(exc_type, exc_value,
                                                exc_traceback)))
         _print(str(err))
+        sys.exit(1)
+    except Exception as err:
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        _print(repr(traceback.format_exception(exc_type, exc_value,
+                                               exc_traceback)))
         sys.exit(1)
 
 
