@@ -1,0 +1,12 @@
+[Unit]
+Description=the indirect restart of automine after a bad gpu caused a reboot
+Requires=automine.service
+After=automine.service
+
+[Service]
+ExecStartPre=/bin/mkdir -p /tmp/automine
+ExecStart=/bin/bash -c "cp %h/bin/automine/overclock.json /tmp/automine/overclock.json"
+ExecStartPost=/bin/systemctl --user disable automine_after_reboot
+
+[Install]
+WantedBy=default.target

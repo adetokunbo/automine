@@ -9,13 +9,8 @@ echo 'Starting ethminer in a detached screen...'
 killall -TERM ethminer >/dev/null 2>&1
 kill -TERM `screen -list | grep ethminer | cut -d \. -f 1 | awk {'print $1'}` >/dev/null 2>&1
 
-echo -n "."; sleep 1
-
 # Put a BASH shell on tab 0.  Good for examining a running system
 /usr/bin/screen -AdmS ethminer -t shell bash
-
-# Start a vncserver.  This works because the /etc/X11/xorg.conf is set up to allow headless access
-/usr/bin/screen -S ethminer -X screen -t vncserver x0vncserver -display :0 -passwordfile $HOME/.vnc/passwd
 
 # Run the miner in tab 1
 /usr/bin/screen -S ethminer -X screen -t ethminer $HOME/bin/automine/nvidia/run_ethminer.sh
@@ -29,6 +24,4 @@ echo -n "."; sleep 1
 screen -r -p ethminer
 
 exit 0
-
-
 
