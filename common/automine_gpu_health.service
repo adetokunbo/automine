@@ -2,4 +2,5 @@
 Description=update the trigger file for any unhealthy gpu
 
 [Service]
+Environment="AUTOMINE_ALERT_DIR=%h/var/automine/triggers"
 ExecStart=/bin/bash -c "%h/bin/automine/nvidia/gpu_health.py"
