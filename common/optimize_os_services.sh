@@ -1,15 +1,20 @@
 #!/bin/bash
 set -e
 
-# Update grub to add custom commands that prevent the network interface
-# name from changing.
+# Update grub to add custom commands that
 #
-# Without this, on some motherboards, each time a PCI devices is added, the
+# 1. prevent the network interface name from changing.
+# 2. force acpi reboots
+#
+# Without 1), on some motherboards, each time a PCI devices is added, the
 # network connection stops working because the ethernet device name has changed
-fix_grub_to_use_eth0() {
+#
+# Without 2), often 'sudo reboot' only does a soft reboot that fails to
+# shutdown, reset and restart key services like SSH.
+fix_grub() {
     echo 'Preventing rename interfaces from eth0 in /etc/default/grub ...'
     sudo sed -i'' \
-         -e s/GRUB_CMDLINE_LINUX=.*/GRUB_CMDLINE_LINUX='"net.ifnames=0 biosdevname=0"'/ \
+         -e s/GRUB_CMDLINE_LINUX=.*/GRUB_CMDLINE_LINUX='"net.ifnames=0 biosdevname=0 acpi=force reboot=acpi"'/ \
          /etc/default/grub
     echo ''
     cat /etc/default/grub
@@ -35,7 +40,7 @@ fix_grub_and_etc() {
         echo "There are ${device_count} interfaces; please update them manually"
         return 0
     }
-    fix_grub_to_use_eth0
+    fix_grub
     fix_etc_to_use_eth0
 }
 
