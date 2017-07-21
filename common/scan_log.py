@@ -63,11 +63,6 @@ def perform_scan(src, error_cfg):
         if not a_line:  # EOF; scan until input ends
             break
 
-        # ignore early lines
-        now = datetime.utcnow()
-        if (now - start) < _WAIT_FOR_A_BIT:
-            continue
-
         # confirm the scan is working ok by:
         #
         # 1. log the initial few scanned lines
@@ -82,6 +77,7 @@ def perform_scan(src, error_cfg):
 
         # ...
         # 2. logging random scanned lines
+        now = datetime.utcnow()
         if now.second % _PRINT_PERIOD == random.randint(0, _PRINT_PERIOD - 1):
             _print(u"scan_log: last line was {}".format(a_line))
 
@@ -92,6 +88,9 @@ def perform_scan(src, error_cfg):
 
             # The 0.00MH/s scan is special; only record a crash if this is in
             # the log after the first minute.
+            if subst.find('0.00MH/s') != -1 and (now - start) < _WAIT_FOR_A_BIT:
+                continue
+
             timestamp = now.isoformat() + 'Z'
             with open(trigger_path, 'a') as out:
                 print(timestamp, file=out)
