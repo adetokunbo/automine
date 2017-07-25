@@ -1,0 +1,6 @@
+[Unit]
+Description=a request from an unhealthy gpu for a reboot
+
+[Service]
+ExecStart=/bin/systemctl --user enable automine_after_reboot
+ExecStartPost=/bin/bash -c "date -u +'%Y-%%m-%dT%%H:%M:%SZ' >> %h/var/automine/triggers/reboot_requests.txt"
