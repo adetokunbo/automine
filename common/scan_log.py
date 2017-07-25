@@ -23,22 +23,26 @@ def _sibling_path(name):
     return os.path.normpath(os.path.join(here, name))
 
 
+_CFG_MESSAGE = u"scan_log: config: {} == {}"
+
+
 def read_cfg(cfg_path):
     """Load the error cfg"""
     try:
         fallback_pool = os.environ['FALLBACK_POOL']
         automine_alert_dir = os.environ['AUTOMINE_ALERT_DIR']
-        _print(u"scan_log: config: {} == {}".format('AUTOMINE_ALERT_DIR', automine_alert_dir))
-        _print(u"scan_log: config: {} == {}".format('FALLBACK_POOL', fallback_pool))
+        _print(_CFG_MESSAGE.format('AUTOMINE_ALERT_DIR', automine_alert_dir))
+        _print(_CFG_MESSAGE.format('FALLBACK_POOL', fallback_pool))
         raw_dict = json.load(open(cfg_path))
         cfg_dict = {}
         for key, value in iter(raw_dict.items()):
             new_key = key.replace("${FALLBACK_POOL}", fallback_pool)
-            new_value = value.replace("${AUTOMINE_ALERT_DIR}", automine_alert_dir)
+            new_value = value.replace("${AUTOMINE_ALERT_DIR}",
+                                      automine_alert_dir)
             cfg_dict[new_key] = new_value
         return cfg_dict
     except KeyError as err:
-        raise ValueError(u'scan_log: Environment did not specify {}'.format(err))
+        raise ValueError(u'scan_log: Environment lacked {}'.format(err))
 
 
 def _print(some_text):
@@ -58,7 +62,7 @@ def perform_scan(src, error_cfg):
     for subst, trigger_path in iter(error_cfg.items()):
         _print(u"scan_log: config: {} <- {}".format(trigger_path, subst))
 
-    while True:
+    while True:  # does not exit until the input stream sends EOF
         a_line = src.readline()
         if not a_line:  # EOF; scan until input ends
             break
@@ -81,44 +85,40 @@ def perform_scan(src, error_cfg):
         if now.second % _PRINT_PERIOD == random.randint(0, _PRINT_PERIOD - 1):
             _print(u"scan_log: last line was {}".format(a_line))
 
-        # scan for the configured lines, halting the scan once an error occurs
+        # scan for the configured trigger lines
         for subst, trigger_path in iter(error_cfg.items()):
             if a_line.find(subst) == -1:
                 continue
 
             # The 0.00MH/s scan is special; only record a crash if this is in
             # the log after the first minute.
-            if subst.find('0.00MH/s') != -1 and (now - start) < _WAIT_FOR_A_BIT:
+            since_start = now - start
+            if subst.find('0.00MH/s') != -1 and since_start < _WAIT_FOR_A_BIT:
                 continue
 
             timestamp = now.isoformat() + 'Z'
             with open(trigger_path, 'a') as out:
                 print(timestamp, file=out)
-            _print(u"scan_log: done, wrote to {} at {}".format(trigger_path, timestamp))
-            return  # exit once any error occurs
+            _print(u"scan_log: trigger found: {}".format(a_line))
+            _print(u"scan_log: done, restart triggered;  added {} at {}".
+                   format(trigger_path, timestamp))
+
 
 def main():
-    """The comamnd line entry point """
+    """The command line entry point """
     cfg_path = _sibling_path('scan_log.json')
     if not os.path.exists(cfg_path):
         _print("No scan_log.json at {}, exiting".format(cfg_path))
-        sys.exit(1)
+        return 1
     try:
         reader = codecs.getreader('utf8')
         perform_scan(reader(sys.stdin), read_cfg(cfg_path))
-        sys.exit(1)  # indicate that the src program errored
-    except ValueError as err:
-        exc_type, exc_value, exc_traceback = sys.exc_info()
-        _print(repr(traceback.format_exception(exc_type, exc_value,
-                                               exc_traceback)))
-        _print(str(err))
-        sys.exit(1)
+        return 0
     except Exception as err:  # pylint: disable=broad-except
-        exc_type, exc_value, exc_traceback = sys.exc_info()
-        _print(repr(traceback.format_exception(exc_type, exc_value,
-                                               exc_traceback)))
-        sys.exit(1)
+        _print(str(err))
+        _print(traceback.format_exc())
+        return 1
 
 
 if __name__ == '__main__':
-    main()
+    sys.exit(main())
