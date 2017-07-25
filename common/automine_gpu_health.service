@@ -3,4 +3,5 @@ Description=check the condition of the gpus
 
 [Service]
 Environment="AUTOMINE_ALERT_DIR=%h/var/automine/triggers"
-ExecStart=/bin/bash -c "%h/bin/automine/nvidia/gpu_health.py"
+Environment="RIG_TYPE={{$RIG_TYPE}}"
+ExecStart=/bin/bash -c "%h/bin/automine/$RIG_TYPE/gpu_health.py"
