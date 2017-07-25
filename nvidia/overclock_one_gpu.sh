@@ -15,9 +15,9 @@ perform_one_overclock() {
 
     set -u  # fail if any required NVD environment variables is not set
     local settings_cmd='/usr/bin/nvidia-settings -a'
-    echo "Updating card $NVD_GPU_INDEX"
-    echo "power_level=$NVD_POWER_LEVEL fan_speed=$NVD_FAN_SPEED"
-    echo "GPU Clock offset=$NVD_CLOCK_OFFSET Memory Offset=$NVD_MTR_OFFSET"
+    printf "GPU #$NVD_GPU_INDEX targets:"
+    printf " power level->$NVD_POWER_LEVEL fan speed->$NVD_FAN_SPEED"
+    printf " clock offset->$NVD_CLOCK_OFFSET memory offset->$NVD_MTR_OFFSET\n"
 
     nvidia-smi -i ${NVD_GPU_INDEX} -pm 1
     nvidia-smi -i ${NVD_GPU_INDEX} -pl $NVD_POWER_LEVEL

@@ -11,9 +11,20 @@ import json
 import os
 import subprocess
 import sys
-
+import traceback
 
 _LIST_GPUS_CMD = "nvidia-smi --query-gpu=name,pci.sub_device_id,index --format=csv,noheader"
+
+
+def _print(some_text, headline=None):
+    with open("/tmp/overclock_log.out", "a") as out:
+        lines = (some_text,)
+        if headline:
+            full_headline = "overclock: {}".format(headline)
+            banner = '-' * len(full_headline)
+            lines = (banner, full_headline, banner, some_text)
+        for line in lines:
+            print(line.encode('utf8'), file=out)
 
 
 def _sibling_path(name):
@@ -26,44 +37,71 @@ def perform_overclock(cfgs):
     """Perform the overclock."""
     gpus_with_index = subprocess.check_output(_LIST_GPUS_CMD.split())
     one_gpu_script = _sibling_path('overclock_one_gpu.sh')
-    for (name, sub_device, index) in [l.split(', ') for l in gpus_with_index.splitlines()]:
+    for (name, sub_device,
+         index) in [l.split(', ') for l in gpus_with_index.splitlines()]:
         index = index.strip()
         sub_device_spec = 'pci.sub_device_id:' + sub_device
         by_name = cfgs.get(name)
         by_spec = cfgs.get(sub_device_spec)
         if by_name is None and by_spec is None:
-            print("Skipped {0}({1}) at #{2}, no config set for it".format(name, sub_device_spec, index))
+            _print("overclock: skipped {0}({1}) at #{2}, no config set for it".
+                   format(name, sub_device_spec, index))
         else:
             the_cfg = by_spec or by_name
-            print("Overclocking {0}({1}) at #{2}".format(name, sub_device_spec, index))
             child_env = dict(os.environ)
             child_env['NVD_GPU_INDEX'] = index
-            for name, value in iter(the_cfg.items()):
-                child_env["NVD_{0}".format(name.upper())] = str(value)
-            print(subprocess.check_output(one_gpu_script,
-                                          executable='/bin/bash',
-                                          env=child_env,
-                                          shell=True))
+            for env_name, value in iter(the_cfg.items()):
+                child_env["NVD_{0}".format(env_name.upper())] = str(value)
+            headline = "updating gpu{:02d} ({}/{})".format(
+                int(index), name, sub_device_spec)
+            _print(
+                subprocess.check_output(
+                    one_gpu_script,
+                    executable='/bin/bash',
+                    env=child_env,
+                    shell=True),
+                headline=headline)
 
 
-def main():
-    """The comamnd line entry point """
-    cfg_path = _sibling_path('../overclock.json')
-    if not os.path.exists(cfg_path):
-        print("No overclock.json at {}, exiting".format(cfg_path))
-        sys.exit(1)
+def _cfg_path(argv):
+    """Determines the path of the configuration file"""
+    cfg_path = argv[1] if len(argv) > 1 else None
+    _exists = os.path.exists
+    if not cfg_path or not _exists(cfg_path):
+        if cfg_path:
+            _print("overclock: no config at {}, trying the default location".
+                   format(cfg_path))
+        cfg_path = _sibling_path('../overclock.json')
+    if not _exists(cfg_path):
+        _print("overclock: no config at {}, exiting".format(cfg_path))
+        return None
+    return cfg_path
+
+
+def main(argv=None):
+    """The comamnd line entry point"""
+    if argv is None:
+        argv = sys.argv
     try:
-        cfg_dict = json.load(open(cfg_path))
-        cfgs = cfg_dict.get('nvidia')
+        cfg_path = _cfg_path(argv)
+        if not cfg_path:
+            return 1
+        cfgs = json.load(open(cfg_path)).get('nvidia')
         if not isinstance(cfgs, dict):
-            raise ValueError("Did not find overclocks in {}".format(cfg_path))
-        print("configuration found at {0}".format(cfg_path))
+            raise ValueError("overclock: missing config in {}".format(
+                cfg_path))
+        _print("overclock: loaded config from {0}".format(cfg_path))
         perform_overclock(cfgs)
+        return 0
     except ValueError as err:
-        print("Error overclocking using the cfg: {0}, exiting".format(cfg_path))
-        print(err)
-        sys.exit(1)
+        _print("overclock: error using the config: {0}, exiting".format(
+            cfg_path))
+        _print(str(err))
+        return 1
+    except Exception as err:  # pylint: disable=broad-except
+        _print(traceback.format_exc(), headline="overclock: {}".format(err))
+        return 1
 
 
 if __name__ == '__main__':
-    main()
+    sys.exit(main())

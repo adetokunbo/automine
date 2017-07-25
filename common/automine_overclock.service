@@ -1,0 +1,11 @@
+[Unit]
+Description=update the gpu overclocks
+Requires=display-manager.service
+After=display-manager.service
+
+[Service]
+Environment="DISPLAY=:0"
+Environment="XAUTHORITY={{$HOME}}/.Xauthority"
+Environment="RIG_TYPE={{$RIG_TYPE}}"
+Environment="USER_HOME={{$HOME}}"
+ExecStart=/bin/bash -c "${USER_HOME}/bin/automine/${RIG_TYPE}/overclock.py /tmp/automine/overclock.json"
