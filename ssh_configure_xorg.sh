@@ -2,5 +2,9 @@
 # Creates an edid.bin used on Nvidia rigs.
 
 source rsync_scripts.sh
-ssh -t $SSH_USER \~/bin/automine/nvidia/configure_xorg.sh
+
+# Use any argument (.e.g, yes,Y,foo) to attempt to generate the edid.bin.
+#
+# Without an argument, the default pre-configured edid.bin is used
+ssh -t $SSH_USER \~/bin/automine/nvidia/configure_xorg.sh "$@"
 
