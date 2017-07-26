@@ -28,14 +28,14 @@ cp_user_systemd_units() {
     mkdir -p $systemd_dir
     sed -e "s|{{\$RIG_TYPE}}|$RIG_TYPE|g" \
         ${here}/automine.service \
-        | sudo tee $systemd_dir/automine.service
+        | tee $systemd_dir/automine.service
 
     cp -v ${here}/automine_triggers.service $systemd_dir
     cp -v ${here}/automine_triggers.path $systemd_dir
     cp -v ${here}/automine_gpu_health.timer $systemd_dir
     sed -e "s/{{\$RIG_TYPE}}/$RIG_TYPE/g" \
-        ${here}/gpu_health.service \
-        | sudo tee $systemd_dir/gpu_health.service
+        ${here}/automine_gpu_health.service \
+        | tee $systemd_dir/automine_gpu_health.service
     cp -v ${here}/automine_needs_reboot.path $systemd_dir
     cp -v ${here}/automine_needs_reboot.service $systemd_dir
     cp -v ${here}/automine_after_reboot.service $systemd_dir
