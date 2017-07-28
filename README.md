@@ -8,6 +8,12 @@ autominer uses [ethminer](https://github.com/ethereum-mining/ethminer).
 
 autominer uses the [ethermine](https://ethermine.org), an Ethereum mining pool, but feel free to set it up to mine solo or to use another pool.
 
+## Getting your OS ready
+1. Download the [Ubuntu Server 16.4.2 LTS](https://www.ubuntu.com/download/server) ISO image to your computer.
+1. Flash it on a pendrive using [UNetbootin](https://unetbootin.github.io), or burn it to a disk.
+1. Boot the rig from your pendrive or disk. You should have an SDD or HDD to install the OS to.
+1. As you install Ubuntu, make sure you choose to install OpenSSH.
+
 ## Using automine
 ### About remote scripts
 Most of the scripts are thought for running them from the computer you are working at, which typically is not the mining rig itself. The scripts starting with `ssh_*` and `rsync_*` are meant to be run from a different machine.
@@ -34,8 +40,9 @@ You should now be able start automine using `mnr_up`. ethminer runs in a `screen
 
 ### Overclocking
 1. Run `ssh_configure_xorg.sh` to get an `/etc/X11/xorg.conf` with a display for each of your GPUs. It will also restart lightdm for you so that the changes are live.
-1. Enter your overclocking choices to your copy of `cfg/127.0.0.1.overclock.sample.json`. You can set different overclocks for different card types or for each single card.
+1. Enter your overclocking choices to your copy of `cfg/127.0.0.1.overclock.sample.json` (for Nvidia cards) or to your copy of `cfg/127.0.0.1.sample.sh` (for AMD cards). For Nvidia cards, you can set different overclocks for different card types or for each single card.
 1. Restart the automine service (`mnr_down && mnr_up`) and find your Xorg process and overclock values on the `nvidia-smi` tab.
+1. With the automine service running, run `sudo nvidia/overclock.py` for Nvidia cards or `sudo DISPLAY=:0 amdgpu/overclock.sh` for AMD cards, and check that the cards are doing alright.
 
 ## Troubleshooting
 ### BIOS setup
