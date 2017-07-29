@@ -6,7 +6,8 @@ PathChanged=%h/var/automine/triggers/switched_to_fallback.txt
 PathChanged=%h/var/automine/triggers/detected_launch_failure.txt
 PathChanged=%h/var/automine/triggers/detected_illegal_memory_access.txt
 PathChanged=%h/var/automine/triggers/unknown_crash.txt
-PathChanged=%h/var/automine/triggers/cant_submit_not_connected.text
+PathChanged=%h/var/automine/triggers/unknown_cuda_error.txt
+PathChanged=%h/var/automine/triggers/cant_submit_not_connected.txt
 
 [Install]
 WantedBy=default.target
