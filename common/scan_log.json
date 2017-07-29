@@ -3,5 +3,6 @@
     "unspecified launch failure" : "${AUTOMINE_ALERT_DIR}/detected_launch_failure.txt",
     "an illegal memory access": "${AUTOMINE_ALERT_DIR}/detected_illegal_memory_access.txt",
     "0.00MH/s": "${AUTOMINE_ALERT_DIR}/unknown_crash.txt",
-    "Can't submit solution: Not connected": "${AUTOMINE_ALERT_DIR}/cant_submit_not_connected.txt"
+    "Can't submit solution: Not connected": "${AUTOMINE_ALERT_DIR}/cant_submit_not_connected.txt",
+    "Error CUDA mining: unknown error": "${AUTOMINE_ALERT_DIR}/unknown_cuda_error.txt"
 }
