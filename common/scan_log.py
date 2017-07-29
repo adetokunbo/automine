@@ -51,6 +51,7 @@ def _print(some_text):
 
 
 _MAX_COUNT = 2
+_TOO_MANY_ZEROS = 10
 _WAIT_FOR_A_BIT = timedelta(0, 30)  # don't trigger on any early logs
 _PRINT_PERIOD = 1000
 
@@ -62,6 +63,7 @@ def perform_scan(src, error_cfg):
     for subst, trigger_path in iter(error_cfg.items()):
         _print(u"scan_log: config: {} <- {}".format(trigger_path, subst))
 
+    consecutive_zeroes = 0
     while True:  # does not exit until the input stream sends EOF
         a_line = src.readline()
         if not a_line:  # EOF; scan until input ends
@@ -88,12 +90,19 @@ def perform_scan(src, error_cfg):
         # scan for the configured trigger lines
         for subst, trigger_path in iter(error_cfg.items()):
             if a_line.find(subst) == -1:
+                consecutive_zeroes = 0
                 continue
 
             # The 0.00MH/s scan is special; only record a crash if this is in
-            # the log after the first minute.
+            # the log after the first minute, and if there have been a number
+            # of matching lines in a row
             since_start = now - start
-            if subst.find('0.00MH/s') != -1 and since_start < _WAIT_FOR_A_BIT:
+            zeroed = subst.find('0.00MH/s') != -1
+            if zeroed and since_start < _WAIT_FOR_A_BIT:
+                continue
+
+            if zeroed and consecutive_zeroes < _TOO_MANY_ZEROS:
+                consecutive_zeroes += 1
                 continue
 
             timestamp = now.isoformat() + 'Z'
