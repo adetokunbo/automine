@@ -32,6 +32,8 @@ cp_user_systemd_units() {
 
     cp -v ${here}/automine_triggers.service $systemd_dir
     cp -v ${here}/automine_triggers.path $systemd_dir
+    cp -v ${here}/automine_track_scan_log.timer $systemd_dir
+    cp -v ${here}/automine_track_scan_log.service $systemd_dir
     cp -v ${here}/automine_gpu_health.timer $systemd_dir
     sed -e "s/{{\$RIG_TYPE}}/$RIG_TYPE/g" \
         ${here}/automine_gpu_health.service \

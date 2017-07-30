@@ -2,10 +2,10 @@
 """A module that checks if scan_log is continuing to run.
 
 track_scan_log checks that the tracker file created by scan_log exists and has
-been updated recently. If not, updates a trigger file.
+been updated recently. If not, it updates a trigger file.
 
-It is intened to be run via a timer task that gets activated whenever scan_log
-is active.
+It is intended to be run via a timer task that gets activated whenever scan_log
+is in use.
 
 """
 
