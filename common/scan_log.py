@@ -17,17 +17,27 @@ import sys
 import traceback
 
 
+def _print(some_text):
+    with open("/tmp/scan_log.out", "a") as out:
+        print(some_text.encode('utf8'), file=out)
+
+
 def _sibling_path(name):
     """Compute path of file relative to this module."""
     here = os.path.dirname(os.path.join(os.getcwd(), __file__))
     return os.path.normpath(os.path.join(here, name))
 
 
+def _as_timestamp(now):
+    """formats now as string timestamp"""
+    return now.isoformat() + 'Z'
+
+
 _CFG_MESSAGE = u"scan_log: config: {} == {}"
 
 
 def read_cfg(cfg_path):
-    """Load the error cfg"""
+    """Load the scan cfg"""
     try:
         fallback_pool = os.environ['FALLBACK_POOL']
         automine_alert_dir = os.environ['AUTOMINE_ALERT_DIR']
@@ -45,36 +55,61 @@ def read_cfg(cfg_path):
         raise ValueError(u'scan_log: Environment lacked {}'.format(err))
 
 
-def _print(some_text):
-    with open("/tmp/scan_log.out", "a") as out:
-        print(some_text.encode('utf8'), file=out)
+_TRACKER_PERIOD = timedelta(0, 120, 0)  # make a tracker record every 2 mins
+_PRINT_PERIOD = 1000
+
+
+def _update_log_tracker(now, latest, last_scanned):
+    """Indicate that the log scanner is making progress"""
+    if now.second % _PRINT_PERIOD == random.randint(0, _PRINT_PERIOD - 1):
+        _print(u"scan_log: last line was {}".format(last_scanned))
+    tracker_path = _tracker_path()
+    if (now - latest) <= _TRACKER_PERIOD:
+        return latest
+    with open(tracker_path, 'w') as out:
+        print(_as_timestamp(now), file=out)
+        return now
+
+
+def _tracker_path():
+    """Determine the tracker path"""
+    try:
+        automine_alert_dir = os.environ['AUTOMINE_ALERT_DIR']
+        return os.path.join(automine_alert_dir, 'scan_log_tracker.txt')
+    except KeyError as err:
+        raise ValueError(u'scan_log: Environment lacked {}'.format(err))
+
+
+def _print_cfg(scan_cfg):
+    """Initialize the log of the scan log."""
+    _print(u"scan_log: tracker_path: {}".format(_tracker_path()))
+    for subst, trigger_path in iter(scan_cfg.items()):
+        _print(u"scan_log: config: {} <- {}".format(trigger_path, subst))
 
 
 _MAX_COUNT = 2
 _TOO_MANY_ZEROS = 10
 _WAIT_FOR_A_BIT = timedelta(0, 30)  # don't trigger on any early logs
-_PRINT_PERIOD = 1000
 
 
-def perform_scan(src, error_cfg):
+def perform_scan(src, scan_cfg):
     """Scan lines of input for the configured errors"""
+    _print_cfg(scan_cfg)
     start = datetime.utcnow()
+    latest_log = start - _TRACKER_PERIOD
     count = 0
-    for subst, trigger_path in iter(error_cfg.items()):
-        _print(u"scan_log: config: {} <- {}".format(trigger_path, subst))
-
     consecutive_zeroes = 0
     while True:  # does not exit until the input stream sends EOF
         a_line = src.readline()
         if not a_line:  # EOF; scan until input ends
             break
+        a_line = a_line.strip()
+        if not a_line:  # ignore lines that are empty
+            continue
 
         # confirm the scan is working ok by:
         #
         # 1. log the initial few scanned lines
-        a_line = a_line.strip()
-        if not a_line:
-            continue
         if count < _MAX_COUNT:  # print something to indicate scan is running ok
             count += 1
             if count == _MAX_COUNT:
@@ -82,13 +117,12 @@ def perform_scan(src, error_cfg):
                 _print(u"scan_log: last line was {}".format(a_line))
 
         # ...
-        # 2. logging random scanned lines
+        # 2. logging random scanned lines; update  log tracker file
         now = datetime.utcnow()
-        if now.second % _PRINT_PERIOD == random.randint(0, _PRINT_PERIOD - 1):
-            _print(u"scan_log: last line was {}".format(a_line))
+        latest_log = _update_log_tracker(now, latest_log, a_line)
 
         # scan for the configured trigger lines
-        for subst, trigger_path in iter(error_cfg.items()):
+        for subst, trigger_path in iter(scan_cfg.items()):
             if a_line.find(subst) == -1:
                 consecutive_zeroes = 0
                 continue
@@ -105,12 +139,11 @@ def perform_scan(src, error_cfg):
                 consecutive_zeroes += 1
                 continue
 
-            timestamp = now.isoformat() + 'Z'
             with open(trigger_path, 'a') as out:
-                print(timestamp, file=out)
+                print(_as_timestamp(now), file=out)
             _print(u"scan_log: trigger found: {}".format(a_line))
             _print(u"scan_log: done, restart triggered;  added {} at {}".
-                   format(trigger_path, timestamp))
+                   format(trigger_path, _as_timestamp(now)))
 
 
 def main():

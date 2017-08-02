@@ -1,5 +1,5 @@
 [Unit]
-Description=a mining trigger file was changed
+Description=trigger: restart the miner because a trigger file was updated
 
 [Path]
 PathChanged=%h/var/automine/triggers/switched_to_fallback.txt
@@ -8,6 +8,7 @@ PathChanged=%h/var/automine/triggers/detected_illegal_memory_access.txt
 PathChanged=%h/var/automine/triggers/unknown_crash.txt
 PathChanged=%h/var/automine/triggers/unknown_cuda_error.txt
 PathChanged=%h/var/automine/triggers/cant_submit_not_connected.txt
+PathChanged=%h/var/automine/triggers/scan_log_is_stale.txt
 
 [Install]
 WantedBy=default.target
