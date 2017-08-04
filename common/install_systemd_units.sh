@@ -40,7 +40,9 @@ cp_user_systemd_units() {
         | tee $systemd_dir/automine_gpu_health.service
     cp -v ${here}/automine_needs_reboot.path $systemd_dir
     cp -v ${here}/automine_needs_reboot.service $systemd_dir
-    cp -v ${here}/automine_after_reboot.service $systemd_dir
+    cp -v ${here}/automine_wait_then_reboot.timer $systemd_dir
+    cp -v ${here}/automine_wait_then_reboot.service $systemd_dir
+    cp -v ${here}/automine_start_with_overclocks.service $systemd_dir
 }
 
 # Update, then copy the overclock systemd units to the superuser systemd
@@ -71,21 +73,16 @@ install_reboot_systemd_units() {
     mkdir -p /tmp/automine
 }
 
-# enable the systemd trigger services
+# Enable the systemd trigger services
 enable_triggers_and_timers() {
-    systemctl --user enable automine_triggers.path
-    systemctl --user start automine_triggers.path
-    systemctl --user enable automine_needs_reboot.path
-    systemctl --user start automine_needs_reboot.path
-    systemctl --user enable automine_gpu_health.timer
-    systemctl --user start automine_gpu_health.timer
-    sudo systemctl enable automine_overclock.path
-    sudo systemctl start automine_overclock.path
-    sudo systemctl enable automine_reboot.path
-    sudo systemctl start automine_reboot.path
+    systemctl --user --now enable automine_triggers.path
+    systemctl --user --now enable automine_needs_reboot.path
+    systemctl --user --now enable automine_gpu_health.timer
+    sudo systemctl --now enable automine_overclock.path
+    sudo systemctl --now enable automine_reboot.path
 }
 
-# ensure there's a persistent systemd journal
+# Ensure there's a persistent systemd journal
 ensure_persistent_journal() {
     sudo mkdir -p /var/log/journal
 }

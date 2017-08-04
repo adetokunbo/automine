@@ -1,0 +1,8 @@
+[Unit]
+Description=scheduled: reboot after a short delay
+
+[Timer]
+OnActiveSec=30
+
+[Install]
+WantedBy=default.target
