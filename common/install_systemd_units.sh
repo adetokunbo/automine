@@ -85,9 +85,15 @@ enable_triggers_and_timers() {
     sudo systemctl start automine_reboot.path
 }
 
+# ensure there's a persistent systemd journal
+ensure_persistent_journal() {
+    sudo mkdir -p /var/log/journal
+}
+
 set -e
 cp_user_systemd_units
 enable_user_systemd_services
+ensure_persistent_journal
 install_overclock_systemd_units
 install_reboot_systemd_units
 enable_triggers_and_timers
