@@ -1,8 +1,8 @@
 [Unit]
-Description=trigger: a request from an unhealthy gpu for a reboot
+Description=automine:trigger: a request from an unhealthy gpu for a reboot
 
 [Path]
 PathChanged=%h/var/automine/triggers/failed_gpus.txt
 
 [Install]
-WantedBy=default.target
+WantedBy=paths.target

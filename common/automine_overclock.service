@@ -1,5 +1,5 @@
 [Unit]
-Description=update the gpu overclocks
+Description=automine: update the gpu overclocks
 Requires=display-manager.service
 After=display-manager.service
 

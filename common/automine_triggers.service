@@ -1,5 +1,5 @@
 [Unit]
-Description=restart the miner because a trigger file was updated
+Description=automine:restart the miner because a trigger file was updated
 
 [Service]
 ExecStart=/bin/systemctl --user restart automine

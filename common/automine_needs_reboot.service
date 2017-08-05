@@ -1,5 +1,5 @@
 [Unit]
-Description=a request from an unhealthy gpu for a reboot
+Description=automine: a request from an unhealthy gpu for a reboot
 
 [Service]
 ExecStartPre=/bin/systemctl --user enable automine_start_with_overclocks

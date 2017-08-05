@@ -1,5 +1,5 @@
 [Unit]
-Description=the automine service with its configured overclocks
+Description=automine: the automine service with its configured overclocks
 Requires=automine.service
 After=automine.service
 
@@ -9,4 +9,4 @@ ExecStart=/bin/bash -c "cp %h/bin/automine/overclock.json /tmp/automine/overcloc
 ExecStartPost=/bin/systemctl --user disable automine_start_with_overclocks
 
 [Install]
-WantedBy=default.target
+WantedBy=graphical.target

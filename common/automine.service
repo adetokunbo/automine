@@ -1,5 +1,5 @@
 [Unit]
-Description=the screen session that runs the miner
+Description=automine: the screen session that runs the miner
 Requires=automine_track_scan_log.timer
 Before=automine_track_scan_log.timer
 

@@ -1,5 +1,5 @@
 [Unit]
-Description=check that scan_log is running
+Description=automine: check that scan_log is running
 
 [Service]
 Environment="AUTOMINE_ALERT_DIR=%h/var/automine/triggers"
