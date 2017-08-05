@@ -75,6 +75,7 @@ install_reboot_systemd_units() {
 
 # Enable the systemd trigger services
 enable_triggers_and_timers() {
+    sudo systemctl daemon-reload
     systemctl --user --now enable automine_triggers.path
     systemctl --user --now enable automine_needs_reboot.path
     systemctl --user --now enable automine_gpu_health.timer

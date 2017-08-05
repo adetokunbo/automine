@@ -42,8 +42,7 @@ enable_user_systemd_services() {
 
 # enable the systemd service
 enable_geth_service() {
-    systemctl --user enable automine_geth.service
-    systemctl --user start automine_geth.service
+    systemctl --user --now enable automine_geth.service
 }
 
 set -e
