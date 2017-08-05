@@ -5,4 +5,4 @@ Description=automine:schedule: reboot after a short delay
 OnActiveSec=30
 
 [Install]
-WantedBy=timer.target
+WantedBy=timers.target

@@ -11,4 +11,4 @@ PathChanged=%h/var/automine/triggers/cant_submit_not_connected.txt
 PathChanged=%h/var/automine/triggers/scan_log_is_stale.txt
 
 [Install]
-WantedBy=path.target
+WantedBy=paths.target
