@@ -1,0 +1,5 @@
+[Unit]
+Description=automine:a reboot caused by an unhealthy gpu
+
+[Service]
+ExecStart=/bin/systemctl reboot --force --force

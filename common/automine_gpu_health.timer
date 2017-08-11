@@ -1,8 +1,0 @@
-[Unit]
-Description=scheduled: check the condition of the gpus
-
-[Timer]
-OnCalendar=*-*-* *:00,15,30,45:00
-
-[Install]
-WantedBy=default.target

@@ -1,0 +1,8 @@
+[Unit]
+Description=automine:schedule: reboot after a short delay
+
+[Timer]
+OnActiveSec=30
+
+[Install]
+WantedBy=timers.target

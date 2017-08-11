@@ -1,5 +1,5 @@
 [Unit]
-Description=trigger: restart the miner because a trigger file was updated
+Description=automine:trigger: restart the miner because a trigger file was updated
 
 [Path]
 PathChanged=%h/var/automine/triggers/switched_to_fallback.txt
@@ -11,4 +11,4 @@ PathChanged=%h/var/automine/triggers/cant_submit_not_connected.txt
 PathChanged=%h/var/automine/triggers/scan_log_is_stale.txt
 
 [Install]
-WantedBy=default.target
+WantedBy=paths.target

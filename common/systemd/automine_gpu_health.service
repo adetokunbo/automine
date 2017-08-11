@@ -1,5 +1,5 @@
 [Unit]
-Description=check the condition of the gpus
+Description=automine: check the condition of the gpus
 
 [Service]
 Environment="AUTOMINE_ALERT_DIR=%h/var/automine/triggers"

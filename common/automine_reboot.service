@@ -1,5 +1,0 @@
-[Unit]
-Description=a reboot caused by an unhealthy gpu
-
-[Service]
-ExecStart=/sbin/reboot

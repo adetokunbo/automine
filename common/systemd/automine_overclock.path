@@ -1,0 +1,8 @@
+[Unit]
+Description=automine:trigger: update the gpu overclocks
+
+[Path]
+PathChanged=/tmp/automine/overclock.json
+
+[Install]
+WantedBy=paths.target
