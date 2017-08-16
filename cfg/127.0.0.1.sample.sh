@@ -3,6 +3,11 @@
 # Write the username in your system here
 RIG_USER='FILL_THIS_IN'
 
+# Set this to your dynamic DNS and
+# `export USE_PUBLIC=true`
+# to access your rig from outside your LAN
+PUBLIC_HOSTNAME='FILL_THIS_IN'
+
 # For updating the linux kernel
 TARGET_KERNEL=4.8.0-54
 

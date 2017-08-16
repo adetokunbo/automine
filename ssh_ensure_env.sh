@@ -14,6 +14,10 @@ if [ ! -f cfg/${RIG_IP}.sh ]; then
 	exit
 fi
 source cfg/${RIG_IP}.sh
-SSH_USER=${RIG_USER}@${RIG_IP}
+if [ "$USE_PUBLIC" = true ]; then
+	SSH_USER="${RIG_USER}@${PUBLIC_HOSTNAME}"
+else
+	SSH_USER=${RIG_USER}@${RIG_IP}
+fi
 DOWNLOAD_DIR=${HOME}/Downloads/${RIG_TYPE}
 [ ${RIG_TYPE} == 'nvidia' ] && ETHASHCUDA=ON || ETHASHCUDA=OFF
