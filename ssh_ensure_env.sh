@@ -16,8 +16,12 @@ fi
 source cfg/${RIG_IP}.sh
 if [ "$USE_PUBLIC" = true ]; then
 	SSH_USER="${RIG_USER}@${PUBLIC_HOSTNAME}"
+	[ -z ${PUBLIC_SSH_PORT} ] || SSH_PORT=${PUBLIC_SSH_PORT}
+	[ -z ${SSH_PORT} ] && SSH_PORT=${LOCAL_SSH_PORT}
 else
 	SSH_USER=${RIG_USER}@${RIG_IP}
+	SSH_PORT=${LOCAL_SSH_PORT}
 fi
+[ -z ${SSH_PORT} ] && SSH_PORT=22
 DOWNLOAD_DIR=${HOME}/Downloads/${RIG_TYPE}
 [ ${RIG_TYPE} == 'nvidia' ] && ETHASHCUDA=ON || ETHASHCUDA=OFF

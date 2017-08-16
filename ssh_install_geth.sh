@@ -2,4 +2,4 @@
 # Installs geth as a background service on the rig.
 
 source rsync_scripts.sh
-ssh -t $SSH_USER \~/bin/automine/common/systemd/install_geth.sh
+ssh -t $SSH_USER -p${SSH_PORT} \~/bin/automine/common/systemd/install_geth.sh
