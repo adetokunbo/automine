@@ -58,10 +58,15 @@ ensure_edid_bin() {
 # Create an xorg.conf using nvidia-xconfig.
 #
 # If no physical Monitor is connected when this command is run, it will be
-# necessary necessary for the BIOS to be updated to prefer the PCI devices to
+# necessary for the BIOS to be updated to prefer the PCI devices to
 # IGF (integrated graphics) devices before rebooting.
+#
+# Moving the conf file to /etc/X11/xorg.conf.d
+# so that it is never overwritten by lightdm restarts
 regenerate_xconfig() {
     sudo nvidia-xconfig -a --cool-bits 28 --custom-edid=DFP-0:/etc/X11/edid.bin --use-edid-dpi --connected-monitor=DFP-0
+    sudo mkdir -p /etc/X11/xorg.conf.d
+    sudo cp /etc/X11/xorg.conf /etc/X11/xorg.conf.d/
 }
 
 restart_lightdm() {
