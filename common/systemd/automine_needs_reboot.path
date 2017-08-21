@@ -2,7 +2,7 @@
 Description=automine:trigger: a request from an unhealthy gpu for a reboot
 
 [Path]
-PathChanged=%h/var/automine/triggers/failed_gpus.txt
+PathChanged={{$AUTOMINE_ALERT_DIR}}/failed_gpus.txt
 
 [Install]
 WantedBy=paths.target

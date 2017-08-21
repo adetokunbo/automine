@@ -2,4 +2,4 @@
 Description=automine: reboot after a short delay
 
 [Service]
-ExecStart=/bin/bash -c "date -u +'%Y-%%m-%dT%%H:%M:%SZ' >> %h/var/automine/triggers/reboot_requests.txt"
+ExecStart=/bin/bash -c "date -u +'%Y-%%m-%dT%%H:%M:%SZ' >> {{$AUTOMINE_ALERT_DIR}}/reboot_requests.txt"

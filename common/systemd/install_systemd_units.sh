@@ -31,17 +31,26 @@ cp_user_systemd_units() {
         | tee $systemd_dir/automine.service
 
     cp -v ${here}/automine_triggers.service $systemd_dir
-    cp -v ${here}/automine_triggers.path $systemd_dir
+    sed -e "s|{{\$AUTOMINE_ALERT_DIR}}|$AUTOMINE_ALERT_DIR|g" \
+        ${here}/automine_triggers.path \
+        | tee $systemd_dir/automine_triggers.path
     cp -v ${here}/automine_track_scan_log.timer $systemd_dir
-    cp -v ${here}/automine_track_scan_log.service $systemd_dir
+    sed -e "s|{{\$AUTOMINE_ALERT_DIR}}|$AUTOMINE_ALERT_DIR|g" \
+        ${here}/automine_track_scan_log.service \
+        | tee $systemd_dir/automine_track_scan_log.service
     cp -v ${here}/automine_gpu_health.timer $systemd_dir
-    sed -e "s/{{\$RIG_TYPE}}/$RIG_TYPE/g" \
+    sed -e "s|{{\$AUTOMINE_ALERT_DIR}}|$AUTOMINE_ALERT_DIR|g" \
+        -e "s/{{\$RIG_TYPE}}/$RIG_TYPE/g" \
         ${here}/automine_gpu_health.service \
         | tee $systemd_dir/automine_gpu_health.service
-    cp -v ${here}/automine_needs_reboot.path $systemd_dir
+    sed -e "s|{{\$AUTOMINE_ALERT_DIR}}|$AUTOMINE_ALERT_DIR|g" \
+        ${here}/automine_needs_reboot.path \
+        | tee $systemd_dir/automine_needs_reboot.path
     cp -v ${here}/automine_needs_reboot.service $systemd_dir
     cp -v ${here}/automine_wait_then_reboot.timer $systemd_dir
-    cp -v ${here}/automine_wait_then_reboot.service $systemd_dir
+    sed -e "s|{{\$AUTOMINE_ALERT_DIR}}|$AUTOMINE_ALERT_DIR|g" \
+        ${here}/automine_wait_then_reboot.service \
+        | tee $systemd_dir/automine_wait_then_reboot.service
     cp -v ${here}/automine_start_with_overclocks.service $systemd_dir
 }
 
@@ -68,7 +77,7 @@ install_reboot_systemd_units() {
     local here=$(this_dir)
     local systemd_dir=/lib/systemd/system
     echo
-    sed -e "s|{{\$HOME}}|$HOME|g" \
+    sed -e "s|{{\$AUTOMINE_ALERT_DIR}}|$AUTOMINE_ALERT_DIR|g" \
         ${here}/automine_reboot.path \
         | sudo tee $systemd_dir/automine_reboot.path
     echo
