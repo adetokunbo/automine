@@ -1,7 +1,7 @@
 #!/usr/bin/env python
-"""A module that execute commands to overclock nvidia Prequisites.
+"""A module that execute commands to overclock nvidia chips.
 
-chips: overclock values should be present in automine/overclock.json
+Prequisites: overclock values should be present in automine/overclock.json
 
 """
 
@@ -88,7 +88,7 @@ def _cfg_path(argv):
 def _configure_logger():
     """Configures logging
 
-    logging_config.json should have placed in the directory AUTOMINE_LOG_DIR,
+    logging_config.json should have been placed in the directory AUTOMINE_LOG_DIR,
     to which this process must have read and write access
 
     """

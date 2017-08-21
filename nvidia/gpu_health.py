@@ -72,7 +72,7 @@ def _mark_bad_gpu(trigger_path, gpu_index):
 def _configure_logger():
     """Configures logging
 
-    logging_config.json should have placed in the directory AUTOMINE_LOG_DIR,
+    logging_config.json should have been placed in the directory AUTOMINE_LOG_DIR,
     to which this process must have read and write access
 
     """
