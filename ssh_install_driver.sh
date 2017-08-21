@@ -7,4 +7,4 @@ source rsync_scripts.sh
 # so need to be downloaded locally and copied across
 [ -f rsync_${RIG_TYPE}_archives.sh ] && source rsync_${RIG_TYPE}_archives.sh
 
-ssh -t $SSH_USER CUDA_VERSION=${CUDA_VERSION} \~/bin/automine/${RIG_TYPE}/install_driver.sh
+ssh -t $SSH_USER -p${SSH_PORT} CUDA_VERSION=${CUDA_VERSION} \~/bin/automine/${RIG_TYPE}/install_driver.sh
