@@ -1,30 +1,37 @@
 #!/usr/bin/env python
-"""A module that execute commands to overclock nvidia chips.
+"""A module that execute commands to overclock nvidia Prequisites.
 
-Prequisites: overclock values should be present in automine/overclock.json
+chips: overclock values should be present in automine/overclock.json
 
 """
 
 from __future__ import print_function
 
 import json
+import logging
+from logging.config import dictConfig
 import os
 import subprocess
 import sys
-import traceback
 
 _LIST_GPUS_CMD = "nvidia-smi --query-gpu=name,pci.sub_device_id,index --format=csv,noheader"
 
 
-def _print(some_text, headline=None):
-    with open("/tmp/overclock_log.out", "a") as out:
-        lines = (some_text,)
-        if headline:
-            full_headline = "overclock: {}".format(headline)
-            banner = '-' * len(full_headline)
-            lines = (banner, full_headline, banner, some_text)
-        for line in lines:
-            print(line.encode('utf8'), file=out)
+def _log_name():
+    """The name to use for logging"""
+    return os.path.splitext(os.path.basename(__file__))[0]
+
+
+_LOG = logging.getLogger(_log_name())
+
+
+def _info(some_text, headline=None):
+    lines = tuple(some_text.splitlines())
+    if headline:
+        banner = '-' * len(headline)
+        lines = (banner, headline, banner) + lines
+    for line in lines:
+        _LOG.info(line)
 
 
 def _sibling_path(name):
@@ -44,8 +51,8 @@ def perform_overclock(cfgs):
         by_name = cfgs.get(name)
         by_spec = cfgs.get(sub_device_spec)
         if by_name is None and by_spec is None:
-            _print("overclock: skipped {0}({1}) at #{2}, no config set for it".
-                   format(name, sub_device_spec, index))
+            _info("skipped {0}({1}) at #{2}, no config set for it".format(
+                name, sub_device_spec, index))
         else:
             the_cfg = by_spec or by_name
             child_env = dict(os.environ)
@@ -54,7 +61,7 @@ def perform_overclock(cfgs):
                 child_env["NVD_{0}".format(env_name.upper())] = str(value)
             headline = "updating gpu{:02d} ({}/{})".format(
                 int(index), name, sub_device_spec)
-            _print(
+            _info(
                 subprocess.check_output(
                     one_gpu_script,
                     executable='/bin/bash',
@@ -69,37 +76,66 @@ def _cfg_path(argv):
     _exists = os.path.exists
     if not cfg_path or not _exists(cfg_path):
         if cfg_path:
-            _print("overclock: no config at {}, trying the default location".
-                   format(cfg_path))
+            _info("no config at {}, trying the default location".format(
+                cfg_path))
         cfg_path = _sibling_path('../overclock.json')
     if not _exists(cfg_path):
-        _print("overclock: no config at {}, exiting".format(cfg_path))
+        _info("no config at {}, exiting".format(cfg_path))
         return None
     return cfg_path
 
 
+def _configure_logger():
+    """Configures logging
+
+    logging_config.json should have placed in the directory AUTOMINE_LOG_DIR,
+    to which this process must have read and write access
+
+    """
+    try:
+        log_dir = os.environ['AUTOMINE_LOG_DIR']
+        log_name = _log_name()
+        cfg_path = os.path.join(log_dir, 'logging_config.json')
+        with open(cfg_path) as src:
+            cfg = json.load(src, 'utf8')
+            handlers = cfg.get('handlers')
+            for handler in iter(handlers.itervalues()):
+                filename = handler.get('filename')
+                if filename:
+                    filename = filename.replace('{{AUTOMINE_LOG_DIR}}',
+                                                log_dir)
+                    filename = filename.replace('{{__name__}}', log_name)
+                    handler['filename'] = filename
+            loggers = cfg.get('loggers')
+            if '__name__' in loggers:
+                loggers[log_name] = loggers.pop('__name__')
+            dictConfig(cfg)
+    except Exception as err:  # pylint: disable=broad-except
+        logging.basicConfig()
+        raise err
+
+
 def main(argv=None):
-    """The comamnd line entry point"""
+    """The command line entry point"""
     if argv is None:
         argv = sys.argv
     try:
+        _configure_logger()
         cfg_path = _cfg_path(argv)
         if not cfg_path:
             return 1
         cfgs = json.load(open(cfg_path)).get('nvidia')
         if not isinstance(cfgs, dict):
-            raise ValueError("overclock: missing config in {}".format(
-                cfg_path))
-        _print("overclock: loaded config from {0}".format(cfg_path))
+            raise ValueError("missing config in {}".format(cfg_path))
+        _info("loaded config from {0}".format(cfg_path))
         perform_overclock(cfgs)
         return 0
-    except ValueError as err:
-        _print("overclock: error using the config: {0}, exiting".format(
-            cfg_path))
-        _print(str(err))
+    except ValueError:
+        _LOG.error(
+            "error using the config: %s, exiting", cfg_path, exc_info=True)
         return 1
-    except Exception as err:  # pylint: disable=broad-except
-        _print(traceback.format_exc(), headline="overclock: {}".format(err))
+    except Exception:  # pylint: disable=broad-except
+        _LOG.error('could not perform overclock', exc_info=True)
         return 1
 
 

@@ -12,15 +12,24 @@ is in use.
 from __future__ import print_function
 
 from datetime import datetime, timedelta
+import json
+import logging
+from logging.config import dictConfig
 import os
 import sys
 import time
-import traceback
 
 
-def _print(some_text):
-    with open("/tmp/track_scan_log.out", "a") as out:
-        print(some_text.encode('utf8'), file=out)
+def _log_name():
+    """The name to use for logging"""
+    return os.path.splitext(os.path.basename(__file__))[0]
+
+
+_LOG = logging.getLogger(_log_name())
+
+
+def _info(some_text):
+    _LOG.info(some_text)
 
 
 def _tracker_path():
@@ -39,7 +48,7 @@ def _alert_dir_path(basename):
         automine_alert_dir = os.environ['AUTOMINE_ALERT_DIR']
         return os.path.join(automine_alert_dir, basename)
     except KeyError as err:
-        raise ValueError(u'scan_log: Environment lacked {}'.format(err))
+        raise ValueError(u'track_scan_log: Environment lacked {}'.format(err))
 
 
 _TRACKER_PERIOD = timedelta(0, 120, 0)
@@ -50,16 +59,16 @@ def _tracker_exists():
     now = datetime.utcnow()
     tracker = _tracker_path()
     if os.path.exists(tracker):
-        _print("Found tracker {} at {}".format(tracker, now))
+        _info("Found tracker {} at {}".format(tracker, now))
         return tracker
 
     time.sleep(_TRACKER_PERIOD.seconds * 2)
     result = os.path.exists(tracker)
     if result:
-        _print("Found tracker {} at {}".format(tracker, now))
+        _info("Found tracker {} at {}".format(tracker, now))
         return tracker
     else:
-        _print("Did not find tracker {} at {}".format(tracker, now))
+        _info("Did not find tracker {} at {}".format(tracker, now))
         return None
 
 
@@ -69,8 +78,8 @@ def _is_recent(tracker_path):
         last_logged = datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S.%fZ")
         now = datetime.utcnow()
         if now - last_logged > _TRACKER_PERIOD:
-            _print("Tracker timestamp was stale; {} at {}".format(last_logged,
-                                                                  now))
+            _info("Tracker timestamp was stale; {} at {}".format(last_logged,
+                                                                 now))
             return False
         else:
             return True
@@ -82,7 +91,7 @@ def _add_trigger():
     now = datetime.utcnow().isoformat() + 'Z'
     with open(trigger_path, 'a') as out:
         print(now, file=out)
-        _print(u"track_scan_log: wrote to {} at {}".format(trigger_path, now))
+        _info(u"track_scan_log: wrote to {} at {}".format(trigger_path, now))
 
 
 def check_the_tracker():
@@ -98,13 +107,44 @@ def check_the_tracker():
     return 0
 
 
+def _configure_logger():
+    """Configures logging
+
+    logging_config.json should have placed in the directory AUTOMINE_LOG_DIR,
+    to which this process must have read and write access
+
+    """
+    try:
+        log_dir = os.environ['AUTOMINE_LOG_DIR']
+        log_name = _log_name()
+        cfg_path = os.path.join(log_dir, 'logging_config.json')
+        with open(cfg_path) as src:
+            cfg = json.load(src, 'utf8')
+            handlers = cfg.get('handlers')
+            for handler in iter(handlers.itervalues()):
+                filename = handler.get('filename')
+                if filename:
+                    filename = filename.replace('{{AUTOMINE_LOG_DIR}}',
+                                                log_dir)
+                    filename = filename.replace('{{__name__}}', log_name)
+                    handler['filename'] = filename
+            loggers = cfg.get('loggers')
+            if '__name__' in loggers:
+                loggers[log_name] = loggers.pop('__name__')
+            dictConfig(cfg)
+    except Exception as err:  # pylint: disable=broad-except
+        logging.basicConfig()
+        raise err
+
+
 def main():
     """The command line entry point"""
     try:
+        _configure_logger()
         check_the_tracker()
         return 0
     except Exception:  # pylint: disable=broad-except
-        _print(traceback.format_exc())
+        _LOG.error('could not perform overclock', exc_info=True)
         return 1
 
 
