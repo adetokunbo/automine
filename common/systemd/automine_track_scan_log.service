@@ -3,4 +3,5 @@ Description=automine: check that scan_log is running
 
 [Service]
 Environment="AUTOMINE_ALERT_DIR={{$AUTOMINE_ALERT_DIR}}"
+Environment="AUTOMINE_LOG_DIR={{$AUTOMINE_LOG_DIR}}"
 ExecStart=/bin/bash -c "%h/bin/automine/common/track_scan_log.py"

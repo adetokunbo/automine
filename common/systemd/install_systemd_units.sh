@@ -18,7 +18,7 @@ function this_dir() {
 
 # Use loginctl to allow user-owned system services at startup
 enable_user_systemd_services() {
-    loginctl enable-linger $LOG_NAME
+    loginctl enable-linger $LOGNAME
 }
 
 # Copy the user systemd configuration files to their required location
@@ -36,10 +36,12 @@ cp_user_systemd_units() {
         | tee $systemd_dir/automine_triggers.path
     cp -v ${here}/automine_track_scan_log.timer $systemd_dir
     sed -e "s|{{\$AUTOMINE_ALERT_DIR}}|$AUTOMINE_ALERT_DIR|g" \
+        -e "s|{{\$AUTOMINE_LOG_DIR}}|$AUTOMINE_LOG_DIR|g" \
         ${here}/automine_track_scan_log.service \
         | tee $systemd_dir/automine_track_scan_log.service
     cp -v ${here}/automine_gpu_health.timer $systemd_dir
     sed -e "s|{{\$AUTOMINE_ALERT_DIR}}|$AUTOMINE_ALERT_DIR|g" \
+        -e "s|{{\$AUTOMINE_LOG_DIR}}|$AUTOMINE_LOG_DIR|g" \
         -e "s/{{\$RIG_TYPE}}/$RIG_TYPE/g" \
         ${here}/automine_gpu_health.service \
         | tee $systemd_dir/automine_gpu_health.service
@@ -65,6 +67,7 @@ install_overclock_systemd_units() {
     echo
     echo 'After: ...'
     sed -e "s|{{\$HOME}}|$HOME|g" \
+        -e "s|{{\$AUTOMINE_LOG_DIR}}|$AUTOMINE_LOG_DIR|g" \
         -e "s/{{\$RIG_TYPE}}/$RIG_TYPE/g" \
         ${here}/automine_overclock.service \
         | sudo tee $systemd_dir/automine_overclock.service
@@ -100,7 +103,15 @@ ensure_persistent_journal() {
     sudo mkdir -p /var/log/journal
 }
 
-set -e
+set -e  # fail if any subcommand fails
+set -u  # fail if any referenced shell variables are unset
+
+# add AUTOMINE_{RT,ALERT,LOG}_DIR to the environment
+SCRIPT_DIR=$(this_dir)
+source $(dirname $(dirname $SCRIPT_DIR))/cfg.sh
+export AUTOMINE_ALERT_DIR=${AUTOMINE_RUNTIME_DIR}/triggers
+export AUTOMINE_LOG_DIR=${AUTOMINE_RUNTIME_DIR}/logs
+
 cp_user_systemd_units
 enable_user_systemd_services
 ensure_persistent_journal

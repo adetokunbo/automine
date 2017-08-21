@@ -3,5 +3,6 @@ Description=automine: check the condition of the gpus
 
 [Service]
 Environment="AUTOMINE_ALERT_DIR={{$AUTOMINE_ALERT_DIR}}"
+Environment="AUTOMINE_LOG_DIR={{$AUTOMINE_LOG_DIR}}"
 Environment="RIG_TYPE={{$RIG_TYPE}}"
 ExecStart=/bin/bash -c "%h/bin/automine/$RIG_TYPE/gpu_health.py"
