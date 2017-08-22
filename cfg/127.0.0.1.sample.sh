@@ -48,9 +48,3 @@ FALLBACK_POOL=us2.ethermine.org:4444
 # Optionally, choose the value of --cuda-parallel-hash flag.  This can have an
 # an effect on the hash rate when mining with Nvidia cards
 CUDA_PARALLEL_HASH=4
-
-# AMD overclock settings
-# These are sample overclocking parameters for AMD cards
-# Used in /amdgpu/overclock.sh
-AMD_MEM_CLOCK_OVERDRIVE=FILL_THIS_IN
-AMD_GPU_CLOCK_LIMIT=FILL_THIS_IN

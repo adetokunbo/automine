@@ -18,12 +18,11 @@ this_dir() {
 
 SCRIPT_DIR=$(this_dir)
 source $(dirname $SCRIPT_DIR)/cfg.sh
-AUTOMINE_ALERT_DIR=${AUTOMINE_RUNTIME_DIR}/triggers
-AUTOMINE_LOG_DIR=${AUTOMINE_RUNTIME_DIR}/logs
+export AUTOMINE_ALERT_DIR=${AUTOMINE_RUNTIME_DIR}/triggers
+export AUTOMINE_LOG_DIR=${AUTOMINE_RUNTIME_DIR}/logs
 set -u
 echo "Mining to ${WALLET}.${WORKER} at ${MAIN_POOL} || ${FALLBACK_POOL}"
 set +u
-
 
 # Monitor with simple alerts from grepping the logs.
 #
@@ -34,9 +33,7 @@ SCAN_LOG=$(dirname $SCRIPT_DIR)/common/scan_log.py
 echo "Scanning logs with $SCAN_LOG"
 scan_log() {
     # drop the port from FALLBACK_POOL, it's not present in the triggering log line
-    FALLBACK_POOL=${FALLBACK_POOL:0:$((${#FALLBACK_POOL}-5))} \
-                 AUTOMINE_ALERT_DIR=$AUTOMINE_ALERT_DIR \
-                 AUTOMINE_LOG_DIR=${AUTOMINE_LOG_DIR} $SCAN_LOG
+    FALLBACK_POOL=${FALLBACK_POOL:0:$((${#FALLBACK_POOL}-5))} $SCAN_LOG
 }
 
 $HOME/bin/ethminer \
