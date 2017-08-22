@@ -24,10 +24,10 @@ RIG_TYPE='FILL_THIS_IN'
 # For installing the nvidia driver
 CUDA_VERSION=ubuntu1604_8.0.61-1
 
-# Required by the log scanning utility that used in run_ethminer
+# Specifies the location of runtime storage
 #
 # Don't modify this, it really needs to be set with this value here!
-AUTOMINE_ALERT_DIR=$HOME/var/automine/triggers
+AUTOMINE_RUNTIME_DIR=$HOME/.automine/var
 
 # Ethminer values
 # Your ETH wallet

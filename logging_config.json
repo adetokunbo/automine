@@ -1,0 +1,35 @@
+{
+    "version": 1,
+    "disable_existing_loggers": false,
+    "formatters": {
+        "simple": {
+            "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+            "datefmt": "%Y-%m-%d %H:%M:%S"
+        }
+    },
+
+    "handlers": {
+        "console":{
+            "level": "INFO",
+            "class": "logging.StreamHandler",
+            "formatter": "simple",
+            "stream": "ext://sys.stdout"
+        },
+        "rotate_16mb": {
+            "level": "INFO",
+            "class": "logging.handlers.RotatingFileHandler",
+            "formatter": "simple",
+            "maxBytes": 16777216,
+            "backupCount": 10,
+            "filename": "{{AUTOMINE_LOG_DIR}}/{{__name__}}.log",
+            "encoding": "utf-8"
+        }
+    },
+
+    "loggers": {
+        "__name__": {
+            "level": "INFO",
+            "handlers": ["console", "rotate_16mb"]
+        }
+    }
+}

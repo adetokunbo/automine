@@ -7,8 +7,8 @@ install_cuda() {
     set -u  # fail if CUDA_VERSION has not been set
     local download_pkg=cuda-repo-${CUDA_VERSION}_amd64.deb
     local download_url=http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64/$download_pkg
-    mkdir -p $HOME/tmp
-    cd $HOME/tmp
+    mkdir -p $HOME/.automine/lib/install
+    cd $HOME/.automine/lib/install
     [ -f $download_pkg ] || wget $download_url
     sudo dpkg -i $download_pkg
     sudo apt-get -y update

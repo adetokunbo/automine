@@ -11,15 +11,23 @@ from __future__ import print_function
 from datetime import datetime, timedelta
 import codecs
 import json
+from logging.config import dictConfig
+import logging
 import os
 import random
 import sys
-import traceback
 
 
-def _print(some_text):
-    with open("/tmp/scan_log.out", "a") as out:
-        print(some_text.encode('utf8'), file=out)
+def _log_name():
+    """The name to use for logging"""
+    return os.path.splitext(os.path.basename(__file__))[0]
+
+
+_LOG = logging.getLogger(_log_name())
+
+
+def _info(some_text):
+    _LOG.info(some_text)
 
 
 def _sibling_path(name):
@@ -33,7 +41,7 @@ def _as_timestamp(now):
     return now.isoformat() + 'Z'
 
 
-_CFG_MESSAGE = u"scan_log: config: {} == {}"
+_CFG_MESSAGE = u"config: {} == {}"
 
 
 def read_cfg(cfg_path):
@@ -41,8 +49,8 @@ def read_cfg(cfg_path):
     try:
         fallback_pool = os.environ['FALLBACK_POOL']
         automine_alert_dir = os.environ['AUTOMINE_ALERT_DIR']
-        _print(_CFG_MESSAGE.format('AUTOMINE_ALERT_DIR', automine_alert_dir))
-        _print(_CFG_MESSAGE.format('FALLBACK_POOL', fallback_pool))
+        _info(_CFG_MESSAGE.format('AUTOMINE_ALERT_DIR', automine_alert_dir))
+        _info(_CFG_MESSAGE.format('FALLBACK_POOL', fallback_pool))
         raw_dict = json.load(open(cfg_path))
         cfg_dict = {}
         for key, value in iter(raw_dict.items()):
@@ -52,7 +60,7 @@ def read_cfg(cfg_path):
             cfg_dict[new_key] = new_value
         return cfg_dict
     except KeyError as err:
-        raise ValueError(u'scan_log: Environment lacked {}'.format(err))
+        raise ValueError(u'Environment lacked {}'.format(err))
 
 
 _TRACKER_PERIOD = timedelta(0, 120, 0)  # make a tracker record every 2 mins
@@ -62,7 +70,7 @@ _PRINT_PERIOD = 1000
 def _update_log_tracker(now, latest, last_scanned):
     """Indicate that the log scanner is making progress"""
     if now.second % _PRINT_PERIOD == random.randint(0, _PRINT_PERIOD - 1):
-        _print(u"scan_log: last line was {}".format(last_scanned))
+        _info(u"last line was {}".format(last_scanned))
     tracker_path = _tracker_path()
     if (now - latest) <= _TRACKER_PERIOD:
         return latest
@@ -77,14 +85,14 @@ def _tracker_path():
         automine_alert_dir = os.environ['AUTOMINE_ALERT_DIR']
         return os.path.join(automine_alert_dir, 'scan_log_tracker.txt')
     except KeyError as err:
-        raise ValueError(u'scan_log: Environment lacked {}'.format(err))
+        raise ValueError(u'Environment lacked {}'.format(err))
 
 
 def _print_cfg(scan_cfg):
     """Initialize the log of the scan log."""
-    _print(u"scan_log: tracker_path: {}".format(_tracker_path()))
+    _info(u"tracker_path: {}".format(_tracker_path()))
     for subst, trigger_path in iter(scan_cfg.items()):
-        _print(u"scan_log: config: {} <- {}".format(trigger_path, subst))
+        _info(u"config: {} <- {}".format(trigger_path, subst))
 
 
 _MAX_COUNT = 2
@@ -113,8 +121,8 @@ def perform_scan(src, scan_cfg):
         if count < _MAX_COUNT:  # print something to indicate scan is running ok
             count += 1
             if count == _MAX_COUNT:
-                _print(u"scan_log: scanned up to {} lines OK".format(count))
-                _print(u"scan_log: last line was {}".format(a_line))
+                _info(u"scanned up to {} lines OK".format(count))
+                _info(u"last line was {}".format(a_line))
 
         # ...
         # 2. logging random scanned lines; update  log tracker file
@@ -141,24 +149,54 @@ def perform_scan(src, scan_cfg):
 
             with open(trigger_path, 'a') as out:
                 print(_as_timestamp(now), file=out)
-            _print(u"scan_log: trigger found: {}".format(a_line))
-            _print(u"scan_log: done, restart triggered;  added {} at {}".
-                   format(trigger_path, _as_timestamp(now)))
+            _info(u"trigger found: {}".format(a_line))
+            _info(u"done, restart triggered;  added {} at {}".format(
+                trigger_path, _as_timestamp(now)))
+
+
+def _configure_logger():
+    """Configures logging
+
+    logging_config.json should have been placed in the directory AUTOMINE_LOG_DIR,
+    to which this process must have read and write access
+
+    """
+    try:
+        log_dir = os.environ['AUTOMINE_LOG_DIR']
+        log_name = _log_name()
+        cfg_path = os.path.join(log_dir, 'logging_config.json')
+        with open(cfg_path) as src:
+            cfg = json.load(src, 'utf8')
+            handlers = cfg.get('handlers')
+            for handler in iter(handlers.itervalues()):
+                filename = handler.get('filename')
+                if filename:
+                    filename = filename.replace('{{AUTOMINE_LOG_DIR}}',
+                                                log_dir)
+                    filename = filename.replace('{{__name__}}', log_name)
+                    handler['filename'] = filename
+            loggers = cfg.get('loggers')
+            if '__name__' in loggers:
+                loggers[log_name] = loggers.pop('__name__')
+            dictConfig(cfg)
+    except Exception as err:  # pylint: disable=broad-except
+        logging.basicConfig()
+        raise err
 
 
 def main():
     """The command line entry point """
-    cfg_path = _sibling_path('scan_log.json')
-    if not os.path.exists(cfg_path):
-        _print("No scan_log.json at {}, exiting".format(cfg_path))
-        return 1
     try:
+        _configure_logger()
+        cfg_path = _sibling_path('scan_log.json')
+        if not os.path.exists(cfg_path):
+            _info("No scan_log.json at {}, exiting".format(cfg_path))
+            return 1
         reader = codecs.getreader('utf8')
         perform_scan(reader(sys.stdin), read_cfg(cfg_path))
         return 0
-    except Exception as err:  # pylint: disable=broad-except
-        _print(str(err))
-        _print(traceback.format_exc())
+    except Exception:  # pylint: disable=broad-except
+        _LOG.error('could not perform overclock', exc_info=True)
         return 1
 
 

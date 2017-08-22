@@ -39,20 +39,21 @@ ensure_edid_bin() {
     local extract_edid=$1
     local script_dir=$(this_dir)
     local data_dir=$(dirname $script_dir)/data
+    local edid_dir=$HOME/.automine/lib/install
+    mkdir -p $edid_dir
 
     if [[ -n ${extract_edid} ]]
     then
         echo "configure_xorg: attempting to create an edid.bin because '${extract_edid}' is set"
         install_edid_tools
-        mkdir -p $HOME/tmp
-        sudo get-edid -m 0 > $HOME/tmp/edid.bin || cp -v $data_dir/edid.bin $HOME/tmp/edid.bin
-        cat $HOME/tmp/edid.bin | edid-decode
+        sudo get-edid -m 0 > ${edid_dir}/edid.bin || cp -v $data_dir/edid.bin ${edid_dir}
+        cat ${edid_dir}/edid.bin | edid-decode
     else
         echo "configure_xorg: using the pre-created edid.bin"
-        cp -v $data_dir/edid.bin $HOME/tmp/edid.bin
+        cp -v $data_dir/edid.bin ${edid_dir}
     fi
     [[ -f /etc/X11/edid.bin ]] && sudo cp /etc/X11/edid.bin /etc/X11/edid.bin.bak
-    sudo cp -v $HOME/tmp/edid.bin /etc/X11/edid.bin
+    sudo cp -v ${edid_dir}/edid.bin /etc/X11/edid.bin
 }
 
 # Create an xorg.conf using nvidia-xconfig.

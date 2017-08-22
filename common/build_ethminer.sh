@@ -17,7 +17,7 @@ this_dir() {
 }
 
 SCRIPT_DIR=$(this_dir)
-REPO_DIR=$HOME/var/repos
+REPO_DIR=$HOME/.automine/var/src
 BIN_DIR=$HOME/bin
 
 ensure_repo_dir() {

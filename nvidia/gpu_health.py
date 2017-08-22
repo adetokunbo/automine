@@ -10,11 +10,13 @@ Prequisites: the nvidia-smi tool should be installed
 from __future__ import print_function
 
 from datetime import datetime
+import json
+import logging
+from logging.config import dictConfig
 import os
 import re
 import subprocess
 import sys
-import traceback
 
 _SHOW_GPUS_CMD = "nvidia-smi --query-gpu=index,clocks.sm,power.draw --format=csv,noheader"
 _A_BAD_WAY = "[Unknown Error]"
@@ -23,9 +25,16 @@ _A_REALLY_BAD_WAY_RX = re.compile(
     re.M)
 
 
-def _print(some_text):
-    with open("/tmp/gpu_health_log.out", "a") as out:
-        print(some_text.encode('utf8'), file=out)
+def _log_name():
+    """The name to use for logging"""
+    return os.path.splitext(os.path.basename(__file__))[0]
+
+
+_LOG = logging.getLogger(_log_name())
+
+
+def _info(some_text):
+    _LOG.info(some_text)
 
 
 def perform_status_check():
@@ -57,19 +66,47 @@ def _mark_bad_gpu(trigger_path, gpu_index):
     now = datetime.utcnow().isoformat() + 'Z'
     with open(trigger_path, 'a') as out:
         print('gpu{:02d}:{}'.format(int(gpu_index), now), file=out)
-        _print(u"gpu_health: wrote to {} at {}".format(trigger_path, now))
+        _info(u"wrote to {} at {}".format(trigger_path, now))
+
+
+def _configure_logger():
+    """Configures logging
+
+    logging_config.json should have been placed in the directory AUTOMINE_LOG_DIR,
+    to which this process must have read and write access
+
+    """
+    try:
+        log_dir = os.environ['AUTOMINE_LOG_DIR']
+        log_name = _log_name()
+        cfg_path = os.path.join(log_dir, 'logging_config.json')
+        with open(cfg_path) as src:
+            cfg = json.load(src, 'utf8')
+            handlers = cfg.get('handlers')
+            for handler in iter(handlers.itervalues()):
+                filename = handler.get('filename')
+                if filename:
+                    filename = filename.replace('{{AUTOMINE_LOG_DIR}}',
+                                                log_dir)
+                    filename = filename.replace('{{__name__}}', log_name)
+                    handler['filename'] = filename
+            loggers = cfg.get('loggers')
+            if '__name__' in loggers:
+                loggers[log_name] = loggers.pop('__name__')
+            dictConfig(cfg)
+    except Exception as err:  # pylint: disable=broad-except
+        logging.basicConfig()
+        raise err
 
 
 def main():
-    """The comamnd line entry point """
+    """The command line entry point """
     try:
+        _configure_logger()
         perform_status_check()
         return 0
-    except ValueError as err:
-        _print(err)
-        return 1
     except Exception:  # pylint: disable=broad-except
-        _print(traceback.format_exc())
+        _LOG.error('could not perform overclock', exc_info=True)
         return 1
 
 

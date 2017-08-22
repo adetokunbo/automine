@@ -2,7 +2,7 @@
 Description=automine:trigger: a reboot caused by an unhealthy gpu
 
 [Path]
-PathChanged={{$HOME}}/var/automine/triggers/reboot_requests.txt
+PathChanged={{$AUTOMINE_ALERT_DIR}}/reboot_requests.txt
 
 [Install]
 WantedBy=paths.target
