@@ -19,6 +19,10 @@
             "mtr_offset": 1600,
             "fan_speed": 80
         }
+    },
+    "amdgpu": {
+	      "mem_clock_overdrive": 20,
+	      "gpu_clock_limit": 7
     }
 }
 
