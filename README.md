@@ -23,10 +23,10 @@ Because all the remote scripts rsync all the needed files to the rig before doin
 ### Configuration
 Make copies of `cfg/127.0.0.1.sample.sh` and `cfg/127.0.0.1.overclock.sample.json` with your rig's IP address and without `.sample` in the filename. You may have a number of rigs, with a copy of each config file. Be sure to replace all occurences of `FILL_THIS_IN` with something meaningful.
 
-Before running any scripts, set RIG_IP or automine will not know which rig you are working with:
+Before running any scripts, set RIG_HOST or automine will not know which rig you are working with:
 
 ```shell
-export RIG_IP=FILL_THIS_IN
+export RIG_HOST=FILL_THIS_IN
 ```
 
 ### Getting ready to mine
