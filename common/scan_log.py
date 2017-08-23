@@ -48,13 +48,14 @@ def read_cfg(cfg_path):
     """Load the scan cfg"""
     try:
         fallback_pool = os.environ['FALLBACK_POOL']
+        fallback_pool_host = fallback_pool.split(':')[0]
         automine_alert_dir = os.environ['AUTOMINE_ALERT_DIR']
         _info(_CFG_MESSAGE.format('AUTOMINE_ALERT_DIR', automine_alert_dir))
-        _info(_CFG_MESSAGE.format('FALLBACK_POOL', fallback_pool))
+        _info(_CFG_MESSAGE.format('FALLBACK_POOL', fallback_pool_host))
         raw_dict = json.load(open(cfg_path))
         cfg_dict = {}
         for key, value in iter(raw_dict.items()):
-            new_key = key.replace("${FALLBACK_POOL}", fallback_pool)
+            new_key = key.replace("${FALLBACK_POOL}", fallback_pool_host)
             new_value = value.replace("${AUTOMINE_ALERT_DIR}",
                                       automine_alert_dir)
             cfg_dict[new_key] = new_value
