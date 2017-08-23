@@ -17,9 +17,10 @@ this_dir() {
 
 SCRIPT_DIR=$(this_dir)
 source $(dirname $SCRIPT_DIR)/cfg.sh
+set -u
 export AUTOMINE_ALERT_DIR=${AUTOMINE_RUNTIME_DIR}/triggers
 export AUTOMINE_LOG_DIR=${AUTOMINE_RUNTIME_DIR}/logs
-set -u
+export FALLBACK_POOL
 echo "Mining to ${WALLET}.${WORKER} at ${MAIN_POOL} || ${FALLBACK_POOL}"
 set +u
 
@@ -30,10 +31,6 @@ set +u
 # which takes the appropriate action, e.g, restart the miner.
 SCAN_LOG=$(dirname $SCRIPT_DIR)/common/scan_log.py
 echo "Scanning logs with $SCAN_LOG"
-scan_log() {
-    # drop the port from FALLBACK_POOL, it's not present in the triggering log line
-    FALLBACK_POOL=${FALLBACK_POOL:0:$((${#FALLBACK_POOL}-5))} $SCAN_LOG
-}
 
 export GPU_FORCE_64BIT_PTR=1
 export GPU_USE_SYNC_OBJECTS=1
@@ -48,4 +45,4 @@ $HOME/bin/ethminer \
     -G \
     --cl-local-work 128 \
     --cl-global-work 16384 \
-    --farm-recheck 200  2>&1 | tee >(scan_log)
+    --farm-recheck 200  2>&1 | tee >($SCAN_LOG)
