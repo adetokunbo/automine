@@ -3,7 +3,7 @@
 This directory should contain files that configure the rigs.
 It's empty apart from some sample files
 
-- `<myhostname>.overclock.json` is used to configure the script that sets overclock settings on `myhostname`
+- `<myhostname>.automine_config.json` is used to configure the script that sets overclock settings on `myhostname`
    
 ## Environment
 
@@ -23,7 +23,7 @@ The ethminer section optionally contains a nested environment section.  This spe
 
 ## Overclock configuration
 
-Files that match the pattern `<hostname>.overclock.json` are used to configure overclocking of nvidia GPUs.
+Files that match the pattern `<hostname>.automine_config.json` are used to configure overclocking of nvidia GPUs.
 
 The nvidia section contains named json configuration objects that can either
 
@@ -40,7 +40,7 @@ $ nvidia-smi --query-gpu=name,pci.sub_device_id,index --format=csv,noheader
 
 ```
 
-There is an example in the sample [overclock.json](./127.0.0.1.overclock.sample.json) file in this directory.
+There is an example in the sample [automine_config.json](./127.0.0.1.automine_config.sample.json) file in this directory.
 
 The amd section is a json configuration object that configures the gpu clock
 limit and memory overdrive for all GPUs on the rig

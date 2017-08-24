@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 """A module that execute commands to overclock nvidia chips.
 
-Prequisites: overclock values should be present in automine/overclock.json
+Prequisites: overclock values should be present in ~/.automine/automine_config.json
+or in a file specified as an argument
 
 """
 
@@ -70,16 +71,19 @@ def perform_overclock(cfgs):
                 headline=headline)
 
 
+_DEFAULT_PATH = os.path.expanduser('~/.automine/automine_config.json')
+
+
 def _cfg_path(argv):
     """Determines the path of the configuration file"""
     cfg_path = argv[1] if len(argv) > 1 else None
-    _exists = os.path.exists
-    if not cfg_path or not _exists(cfg_path):
+    _is_file = os.path.isfile
+    if not cfg_path or not _is_file(cfg_path):
         if cfg_path:
             _info("no config at {}, trying the default location".format(
                 cfg_path))
-        cfg_path = _sibling_path('../overclock.json')
-    if not _exists(cfg_path):
+        cfg_path = _DEFAULT_PATH
+    if not _is_file(cfg_path):
         _info("no config at {}, exiting".format(cfg_path))
         return None
     return cfg_path

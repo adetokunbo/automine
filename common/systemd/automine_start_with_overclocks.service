@@ -5,7 +5,7 @@ After=automine.service
 
 [Service]
 ExecStartPre=/bin/mkdir -p /tmp/automine
-ExecStart=/bin/bash -c "cp %h/bin/automine/overclock.json /tmp/automine/overclock.json"
+ExecStart=/bin/bash -c "cp %h/.automine/automine_config.json /tmp/automine/
 ExecStartPost=/bin/systemctl --user disable automine_start_with_overclocks
 
 [Install]

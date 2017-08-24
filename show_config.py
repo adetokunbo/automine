@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """A module that execute commands to overclock nvidia chips.
 
-Prequisites: overclock values should be present in automine/overclock.json
+Prequisites: overclock values should be present in ~/.automine/automine_config.json
 
 """
 
@@ -93,7 +93,7 @@ def _show_cfg(the_cfg):
 
 
 _ENV_VAR = 'AUTOMINE_CFG_PATH'
-_DEFAULT_PATH = os.path.expanduser('~/.automine/rig_config.json')
+_DEFAULT_PATH = os.path.expanduser('~/.automine/automine_config.json')
 
 
 def _cfg_path():
