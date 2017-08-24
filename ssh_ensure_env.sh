@@ -1,20 +1,22 @@
 #!/bin/bash
+set -e
 
 if [ -z ${RIG_HOST+x} ]; then
 	echo "RIG_HOST is unset. Do the following filling in your rig's hostname or ip address"
 	echo "export RIG_HOST=FILL_THIS_IN"
 	exit
 fi
-if [ ! -f cfg/${RIG_HOST}.sh ]; then
-	echo "File not found: cfg/${RIG_HOST}.sh"
+if [ ! -f cfg/${RIG_HOST}.overclock.json ]; then
+	echo "File not found: cfg/${RIG_HOST}.overclock.json"
 	echo "Do the following to create the file:"
-	echo "cp cfg/127.0.0.1.sample.sh cfg/${RIG_HOST}.sh"
+	echo "cp cfg/127.0.0.1.overclock.json cfg/${RIG_HOST}.overclock.json"
 	echo "Then edit the file and fill in the relevant values for your rig."
 	echo "After filling in the vaules, run this script again."
 	exit
 fi
 
-source cfg/${RIG_HOST}.sh
+export AUTOMINE_CFG_PATH=cfg/${RIG_HOST}.overclock.json
+$(./show_config.py shell_exports)
 
 # Fail with a useful warning if the deprecated value for $AUTOMINE_ALERT_DIR is set
 if [ -n ${AUTOMINE_ALERT_DIR:=''} ] || [ -z ${AUTOMINE_RUNTIME_DIR} ]; 
