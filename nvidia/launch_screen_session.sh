@@ -13,7 +13,7 @@ kill -TERM `screen -list | grep ethminer | cut -d \. -f 1 | awk {'print $1'}` >/
 /usr/bin/screen -AdmS ethminer -t shell bash
 
 # Run the miner in tab 1
-/usr/bin/screen -S ethminer -X screen -t ethminer $HOME/bin/automine/nvidia/run_ethminer.sh
+/usr/bin/screen -S ethminer -X screen -t ethminer $HOME/bin/automine/common/run_ethminer.sh
 
 # Show the result of running nvidia-smi on tab 4
 /usr/bin/screen -AS ethminer -X screen -t nvidia_smi watch -n60 nvidia-smi
