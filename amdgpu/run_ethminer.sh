@@ -1,4 +1,5 @@
 #!/bin/bash
+
 this_dir() {
     local script_path="${BASH_SOURCE[0]}"
     if ([ -h "${script_path}" ])
@@ -15,13 +16,11 @@ this_dir() {
     echo $script_path
 }
 
-SCRIPT_DIR=$(this_dir)
-source $(dirname $SCRIPT_DIR)/cfg.sh
 set -u
+eval $($HOME/bin/automine_show_config shell_exports)
+eval $($HOME/bin/automine_show_config ethminer_exports)
 export AUTOMINE_ALERT_DIR=${AUTOMINE_RUNTIME_DIR}/triggers
 export AUTOMINE_LOG_DIR=${AUTOMINE_RUNTIME_DIR}/logs
-export FALLBACK_POOL
-echo "Mining to ${WALLET}.${WORKER} at ${MAIN_POOL} || ${FALLBACK_POOL}"
 set +u
 
 # Monitor with simple alerts from grepping the logs.
@@ -29,20 +28,6 @@ set +u
 # The scan log tool performs a simple grep of known errors and updates files in
 # the alert directory when it detects them. These files are monitored by systemd
 # which takes the appropriate action, e.g, restart the miner.
-SCAN_LOG=$(dirname $SCRIPT_DIR)/common/scan_log.py
+SCAN_LOG=$(dirname $(this_dir))/common/scan_log.py
 echo "Scanning logs with $SCAN_LOG"
-
-export GPU_FORCE_64BIT_PTR=1
-export GPU_USE_SYNC_OBJECTS=1
-export GPU_MAX_ALLOC_PERCENT=100
-export GPU_SINGLE_ALLOC_PERCENT=100
-export GPU_MAX_HEAP_SIZE=100
-
-$HOME/bin/ethminer \
-    -S ${MAIN_POOL} \
-    -FS ${FALLBACK_POOL}  \
-    -O "$WALLET"."$WORKER" \
-    -G \
-    --cl-local-work 128 \
-    --cl-global-work 16384 \
-    --farm-recheck 200  2>&1 | tee >($SCAN_LOG)
+$HOME/bin/ethminer $($HOME/bin/automine_show_config ethminer_opts) 2>&1 | tee >($SCAN_LOG)

@@ -107,8 +107,7 @@ set -e  # fail if any subcommand fails
 set -u  # fail if any referenced shell variables are unset
 
 # add AUTOMINE_{RT,ALERT,LOG}_DIR to the environment
-SCRIPT_DIR=$(this_dir)
-source $(dirname $(dirname $SCRIPT_DIR))/cfg.sh
+eval $($HOME/bin/automine_show_config shell_exports)
 export AUTOMINE_ALERT_DIR=${AUTOMINE_RUNTIME_DIR}/triggers
 export AUTOMINE_LOG_DIR=${AUTOMINE_RUNTIME_DIR}/logs
 
