@@ -19,7 +19,7 @@ mkdir -p ~/var/downloads
 # wget -O ~/var/downloads/amdgpu-pro-17.10-414273.tar.xz  https://www2.ati.com/drivers/linux/ubuntu/amdgpu-pro-17.10-414273.tar.xz
 
 # From Mac
-scp ~/Downloads/amdgpu-pro-17.10-414273.tar.xz ${RIG_USER}@{RIG_IP_ADDRESS:-192.168.11.9}:~/var/downloads/amdgpu-pro-17.10-414273.tar.xz
+scp ~/Downloads/amdgpu-pro-17.10-414273.tar.xz ${RIG_USER}@{RIG_HOST_ADDRESS:-192.168.11.9}:~/var/downloads/amdgpu-pro-17.10-414273.tar.xz
 
 # On Ubuntu
 cd /tmp
@@ -50,7 +50,7 @@ sudo usermod -a -G video $LOGNAME
 # On Mac
 # Copy the AMD SDK download to the linux box
 scp ~/Downloads/AMD-APP-SDKInstaller-v3.0.130.136-GA-linux64.tar.bz2 \
-    ${RIG_USER}@{RIG_IP_ADDRESS:-192.168.11.9}:~/var/downloads/AMD-APP-SDKInstaller-v3.0.130.136-GA-linux64.tar.bz2
+    ${RIG_USER}@{RIG_HOST_ADDRESS:-192.168.11.9}:~/var/downloads/AMD-APP-SDKInstaller-v3.0.130.136-GA-linux64.tar.bz2
 
 # On Ubuntu
 # Install the AMD SDK
@@ -219,7 +219,7 @@ mkdir -p ~/var/downloads
 # wget -O ~/var/downloads/amdgpu-pro-17.10-414273.tar.xz  https://www2.ati.com/drivers/linux/ubuntu/amdgpu-pro-17.10-414273.tar.xz
 
 # From Mac
-scp ~/Downloads/amdgpu-pro-17.10-414273.tar.xz ${RIG_IP_ADDRESS:-192.168.11.9}:~/var/downloads/amdgpu-pro-17.10-414273.tar.xz
+scp ~/Downloads/amdgpu-pro-17.10-414273.tar.xz ${RIG_HOST_ADDRESS:-192.168.11.9}:~/var/downloads/amdgpu-pro-17.10-414273.tar.xz
 
 # On Ubuntu
 cd /tmp

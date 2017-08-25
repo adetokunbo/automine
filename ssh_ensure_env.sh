@@ -1,20 +1,20 @@
 #!/bin/bash
 
-if [ -z ${RIG_IP+x} ]; then
-	echo "RIG_IP is unset. Do the following filling in your rig's IP"
-	echo "export RIG_IP=FILL_THIS_IN"
+if [ -z ${RIG_HOST+x} ]; then
+	echo "RIG_HOST is unset. Do the following filling in your rig's hostname or ip address"
+	echo "export RIG_HOST=FILL_THIS_IN"
 	exit
 fi
-if [ ! -f cfg/${RIG_IP}.sh ]; then
-	echo "File not found: cfg/${RIG_IP}.sh"
+if [ ! -f cfg/${RIG_HOST}.sh ]; then
+	echo "File not found: cfg/${RIG_HOST}.sh"
 	echo "Do the following to create the file:"
-	echo "cp cfg/127.0.0.1.sample.sh cfg/${RIG_IP}.sh"
+	echo "cp cfg/127.0.0.1.sample.sh cfg/${RIG_HOST}.sh"
 	echo "Then edit the file and fill in the relevant values for your rig."
 	echo "After filling in the vaules, run this script again."
 	exit
 fi
 
-source cfg/${RIG_IP}.sh
+source cfg/${RIG_HOST}.sh
 
 # Fail with a useful warning if the deprecated value for $AUTOMINE_ALERT_DIR is set
 if [ -n ${AUTOMINE_ALERT_DIR:=''} ] || [ -z ${AUTOMINE_RUNTIME_DIR} ]; 
@@ -30,7 +30,7 @@ if [ "${USE_PUBLIC:=false}" = true ]; then
 	SSH_PORT=${PUBLIC_SSH_PORT:=0}
 	[ ${SSH_PORT}==0 ] && SSH_PORT=${LOCAL_SSH_PORT:=22}
 else
-	SSH_USER=${RIG_USER}@${RIG_IP}
+	SSH_USER=${RIG_USER}@${RIG_HOST}
 	SSH_PORT=${LOCAL_SSH_PORT:=22}
 fi
 DOWNLOAD_DIR=${HOME}/Downloads/${RIG_TYPE}
