@@ -29,6 +29,6 @@ mnr_nvinfo_lots() {
 }
 
 mnr_overclock_info() {
-   cat ~/bin/automine/overclock.json
+   cat ~/.automine/automine_config.json
 }
 

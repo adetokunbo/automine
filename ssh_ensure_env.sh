@@ -6,16 +6,16 @@ if [ -z ${RIG_HOST+x} ]; then
 	echo "export RIG_HOST=FILL_THIS_IN"
 	exit
 fi
-if [ ! -f cfg/${RIG_HOST}.overclock.json ]; then
-	echo "File not found: cfg/${RIG_HOST}.overclock.json"
+if [ ! -f cfg/${RIG_HOST}.automine_config.json ]; then
+	echo "File not found: cfg/${RIG_HOST}.automine_config.json"
 	echo "Do the following to create the file:"
-	echo "cp cfg/127.0.0.1.overclock.json cfg/${RIG_HOST}.overclock.json"
+	echo "cp cfg/127.0.0.1.automine_config.json cfg/${RIG_HOST}.automine_config.json"
 	echo "Then edit the file and fill in the relevant values for your rig."
 	echo "After filling in the vaules, run this script again."
 	exit
 fi
 
-export AUTOMINE_CFG_PATH=cfg/${RIG_HOST}.overclock.json
+export AUTOMINE_CFG_PATH=cfg/${RIG_HOST}.automine_config.json
 $(./show_config.py shell_exports)
 
 # Fail with a useful warning if the deprecated value for $AUTOMINE_ALERT_DIR is set

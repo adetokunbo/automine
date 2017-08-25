@@ -2,7 +2,7 @@
 Description=automine:trigger: update the gpu overclocks
 
 [Path]
-PathChanged=/tmp/automine/overclock.json
+PathChanged=/tmp/automine/automine_config.json
 
 [Install]
 WantedBy=paths.target
