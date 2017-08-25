@@ -29,7 +29,7 @@
         "CUDA_VERSION": "REQUIRED if RIG_TYPE=nvidia e.g:ubuntu1604_8.0.61-1. Used by ssh_install_driver",
         "RIG_USER": "REQUIRED: FILL_THIS_IN",
         "RIG_TYPE": "REQUIRED: nvidia|amdgpu",
-        "PUBLIC_HOSTNAME": "OPTIONAL: set this to your dynamic DNS and export USE_PUBLIC_TRUE to access your rig from your LAN",
+        "PUBLIC_HOSTNAME": "OPTIONAL: set this to your dynamic DNS and export USE_PUBLIC=true to access your rig from outside your LAN",
         "PUBLIC_SSH_PORT": "OPTIONAL: set this to the port your router is forwarding your rig's SSH server if it's not 22 when using PUBLIC_HOSTNAME",
         "TARGET_KERNEL": "OPTIONAL: e.g: 4.8.0-54.  Specifies the kernel used by ssh_update_kernel_image"
     },
