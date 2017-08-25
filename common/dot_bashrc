@@ -32,7 +32,3 @@ mnr_overclock_info() {
    cat ~/bin/automine/overclock.json
 }
 
-mnr_node_cfg() {
-   cat ~/bin/automine/cfg.sh
-}
-

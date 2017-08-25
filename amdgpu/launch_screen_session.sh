@@ -18,7 +18,7 @@ echo -n "."; sleep 1
 /usr/bin/screen -AdmS ethminer -t shell bash --rcfile $BIN_DIR/screen_dot_profile
 
 # Run the miner
-/usr/bin/screen -S ethminer  -X screen -t ethminer $BIN_DIR/run_ethminer.sh
+/usr/bin/screen -S ethminer  -X screen -t ethminer $HOME/bin/automine/common/run_ethminer.sh
 
 # Start our temperature / fan speed control loop - this is backgrounded and not
 # in screen, but we want it after ethminer and before anything reliant on it.

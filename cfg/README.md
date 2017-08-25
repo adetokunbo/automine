@@ -1,12 +1,25 @@
 # Rig configuration
 
 This directory should contain files that configure the rigs.
-
-- `<myhostname>.sh` sets up Environment variables used both to set up the rig at `myhostname`, and to run other scripts on `myhostname`
+It's empty apart from some sample files
 
 - `<myhostname>.overclock.json` is used to configure the script that sets overclock settings on `myhostname`
    
-It's empty apart from some sample files
+## Environment
+
+The environment section specifies environment values that are used
+- locally where the control scripts are run
+- and also by scripts on the rig
+
+There are few required values, like RIG_USER AND RIG_TYPE, and various optional
+ones that depend on the type of rig or the control commands that need to be run
+
+## Ethminer options
+
+The ethminer section specifies command line flags to use with the ethminer binary. Here also, there is a mix of required and optional fields.
+
+The ethminer section optionally contains a nested environment section.  This specifies environment values to be set when the ethminer command is run.
+
 
 ## Overclock configuration
 
@@ -28,3 +41,6 @@ $ nvidia-smi --query-gpu=name,pci.sub_device_id,index --format=csv,noheader
 ```
 
 There is an example in the sample [overclock.json](./127.0.0.1.overclock.sample.json) file in this directory.
+
+The amd section is a json configuration object that configures the gpu clock
+limit and memory overdrive for all GPUs on the rig

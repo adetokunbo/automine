@@ -23,6 +23,38 @@
     "amdgpu": {
 	      "mem_clock_overdrive": 20,
 	      "gpu_clock_limit": 7
+    },
+    "environment": {
+        "AUTOMINE_RUNTIME_DIR": "$HOME/.automine/var",
+        "CUDA_VERSION": "REQUIRED if RIG_TYPE=nvidia e.g:ubuntu1604_8.0.61-1. Used by ssh_install_driver",
+        "RIG_USER": "REQUIRED: FILL_THIS_IN",
+        "RIG_TYPE": "REQUIRED: nvidia|amdgpu",
+        "PUBLIC_HOSTNAME": "OPTIONAL: set this to your dynamic DNS and export USE_PUBLIC=true to access your rig from outside your LAN",
+        "PUBLIC_SSH_PORT": "OPTIONAL: set this to the port your router is forwarding your rig's SSH server if it's not 22 when using PUBLIC_HOSTNAME",
+        "TARGET_KERNEL": "OPTIONAL: e.g: 4.8.0-54.  Specifies the kernel used by ssh_update_kernel_image"
+    },
+    "ethminer": {
+        "main-pool": "REQUIRED: FILL_THIS_IN: e.g, asia1.ethermine.org:4444",
+        "farm-recheck": 200,
+        "fallback-pool": "REQUIRED: FILL_THIS_IN: e.g: us2.ethermine.org:4444",
+        "wallet": "REQUIRED: FILL_THIS_IN: your ETH wallet",
+        "worker": "REQUIRED: FILL_THIS_IN: the arbitrary name of this rig, for pool reports",
+        "amdgpu": {
+            "cl-local-work": 128,
+            "cl-global-work": 16384
+        },
+        "nvidia": {
+            "cuda-block-size": 64,
+            "cuda-grid-size": 8192,
+            "cuda-parallel-hash": 1
+        },
+        "environment": {
+            "GPU_FORCE_64BIT_PTR": 1,
+            "GPU_USE_SYNC_OBJECTS": 1,
+            "GPU_MAX_ALLOC_PERCENT": 100,
+            "GPU_SINGLE_ALLOC_PERCENT": 100,
+            "GPU_MAX_HEAP_SIZE": 100
+        }
     }
 }
 
