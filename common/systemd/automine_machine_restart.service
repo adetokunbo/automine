@@ -1,0 +1,11 @@
+[Unit]
+Description=automine: the automine service on machine restarts
+Requires=automine.service
+After=automine.service
+
+[Service]
+ExecStart=/bin/true
+ExecStartPost=/bin/systemctl --user disable automine_machine_restart
+
+[Install]
+WantedBy=default.target

@@ -48,12 +48,18 @@ cp_user_systemd_units() {
     sed -e "s|{{\$AUTOMINE_ALERT_DIR}}|$AUTOMINE_ALERT_DIR|g" \
         ${here}/automine_needs_reboot.path \
         | tee $systemd_dir/automine_needs_reboot.path
-    cp -v ${here}/automine_needs_reboot.service $systemd_dir
+    sed -e "s|{{\$AUTOMINE_ALERT_DIR}}|$AUTOMINE_ALERT_DIR|g" \
+        ${here}/automine_needs_reboot.service \
+        | tee $systemd_dir/automine_needs_reboot.service
     cp -v ${here}/automine_wait_then_reboot.timer $systemd_dir
     sed -e "s|{{\$AUTOMINE_ALERT_DIR}}|$AUTOMINE_ALERT_DIR|g" \
         ${here}/automine_wait_then_reboot.service \
         | tee $systemd_dir/automine_wait_then_reboot.service
-    cp -v ${here}/automine_start_with_overclocks.service $systemd_dir
+    cp -v ${here}/automine_wait_then_overclock.timer $systemd_dir
+    sed -e "s|{{\$AUTOMINE_ALERT_DIR}}|$AUTOMINE_ALERT_DIR|g" \
+        ${here}/automine_wait_then_overclock.service \
+        | tee $systemd_dir/automine_wait_then_overclock.service
+    cp -v ${here}/automine_machine_restart.service $systemd_dir
 }
 
 # Update, then copy the overclock systemd units to the superuser systemd

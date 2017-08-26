@@ -1,0 +1,8 @@
+[Unit]
+Description=automine:schedule: update overclocks after a short delay
+
+[Timer]
+OnActiveSec=15
+
+[Install]
+WantedBy=timers.target

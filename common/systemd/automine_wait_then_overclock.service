@@ -1,0 +1,6 @@
+[Unit]
+Description=automine: update overclocks after a short delay
+
+[Service]
+ExecStart=/bin/bash -c "[[ -f {{$AUTOMINE_ALERT_DIR}}/overclock_on_restart.txt ]] && /bin/mkdir -p /tmp/automine/ && /bin/cp %h/.automine/automine_config.json /tmp/automine/"
+ExecStartPost=/bin/bash -c "[[ $(/bin/cat {{$AUTOMINE_ALERT_DIR}}/overclock_on_restart.txt) == 'ONCE' ]] && /bin/rm -v {{$AUTOMINE_ALERT_DIR}}/overclock_on_restart.txt"
