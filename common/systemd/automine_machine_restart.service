@@ -4,6 +4,7 @@ Requires=automine.service
 After=automine.service
 
 [Service]
+ExecStartPre=/bin/systemctl --user reenable automine_check_network.timer
 ExecStart=/bin/true
 ExecStartPost=/bin/systemctl --user disable automine_machine_restart
 

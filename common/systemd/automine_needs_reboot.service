@@ -1,5 +1,5 @@
 [Unit]
-Description=automine: a request from an unhealthy gpu for a reboot
+Description=automine: a request from an unhealthy machine for a reboot
 
 [Service]
 ExecStartPre=/bin/bash -c "[[ -f {{$AUTOMINE_ALERT_DIR}}/overclock_on_restart.txt ]] || echo 'ONCE' > {{$AUTOMINE_ALERT_DIR}}/overclock_on_restart.txt"

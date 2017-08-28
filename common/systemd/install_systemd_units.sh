@@ -76,6 +76,8 @@ cp_user_systemd_units() {
     cp -v ${here}/automine_wait_then_overclock.timer $systemd_dir
     _sed_cp ${here}/automine_wait_then_overclock.service $systemd_dir 'AUTOMINE_ALERT_DIR'
     cp -v ${here}/automine_machine_restart.service $systemd_dir
+    cp -v ${here}/automine_check_network.timer $systemd_dir
+    cp -v ${here}/automine_check_network.service $systemd_dir
 }
 
 # Update, then copy the overclock systemd units to the superuser systemd
