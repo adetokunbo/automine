@@ -57,5 +57,51 @@ fix_grub_and_etc() {
     fix_etc_to_use_eth0
 }
 
+conf_rk_hunter() {
+    # [rkunter](https://help.ubuntu.com/community/RKhunter) This helps check for
+    # rootkits.  Updating the configuration allows it to be run daily
+    echo 'Before: ..'
+    cat /etc/default/rkhunter
+    echo
+    sudo sed -i'' \
+         -e "s/^CRON_DAILY_RUN=.*/CRON_DAILY_RUN='yes'/" \
+         -e "s/^APT_AUTOGEN=.*/APT_AUTOGEN='yes'/" \
+         /etc/default/rkhunter
+    echo 'After: ...'
+    cat /etc/default/rkhunter
+    echo
+    sudo rkhunter --propupd
+}
+
+conf_chkrootkit() {
+    # [chkrootkit](https://hostpresto.com/community/tutorials/how-to-install-and-use-chkrootkit-on-ubuntu-14-04/)
+    # This helps check for rootkits. Updating the configuration allows it to be
+    # run regularly
+    echo 'Before: ..'
+    cat /etc/chkrootkit.conf
+    echo
+    sudo sed -i'' \
+         -e "s/^RUN_DAILY=.*/RUN_DAILY='true'/" \
+         /etc/chkrootkit.conf
+    echo 'After: ...'
+    cat /etc/chkrootkit.conf
+    echo
+    sudo rkhunter --propupd
+}
+
+install_simple_security() {
+    sudo apt -y update
+    sudo apt -y install rkhunter chkrootkit fail2ban
+
+    # [fail2ban](http://www.fail2ban.org/wiki/index.php/MANUAL_0_8)
+    # On Ubuntu 16.04, the default installation is good for blocking ssh intrusions
+    # conf_fail2ban
+
+    conf_rk_hunter
+    conf_chkrootkit
+}
+
 fix_grub_and_etc
 fix_sshd_config
+install_simple_security
+
