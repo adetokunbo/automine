@@ -33,6 +33,19 @@ fix_etc_to_use_eth0() {
     cat /etc/network/interfaces
 }
 
+fix_sshd_config() {
+    echo 'Before: ..'
+    cat /etc/ssh/sshd_config | grep -A 2 -B 2 'PasswordAuthentication'
+    echo
+    sudo sed -i'' \
+         -e "s/.*PasswordAuthentication\\s*yes/PasswordAuthentication no/" \
+         /etc/ssh/sshd_config
+    echo 'After: ...'
+    cat /etc/ssh/sshd_config | grep -A 2 -B 2 'PasswordAuthentication'
+    echo
+    sudo service ssh restart
+}
+
 fix_grub_and_etc() {
     local device_count=$(cat /proc/net/dev | tail -n +3 | wc -l)
     (( $device_count==2 )) || {
@@ -45,4 +58,4 @@ fix_grub_and_etc() {
 }
 
 fix_grub_and_etc
-
+fix_sshd_config
