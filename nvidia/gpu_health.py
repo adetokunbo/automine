@@ -37,6 +37,9 @@ def _info(some_text):
     _LOG.info(some_text)
 
 
+_UNKNOWN_GPU = 49
+
+
 def perform_status_check():
     """Perform the status check."""
     try:
@@ -57,6 +60,8 @@ def perform_status_check():
             if gpu_clock != _A_BAD_WAY and power_draw != _A_BAD_WAY:
                 continue
             _mark_bad_gpu(out_path, index)
+    except subprocess.CalledProcessError:
+        _mark_bad_gpu(out_path, _UNKNOWN_GPU)
     except KeyError as err:
         raise ValueError(u'gpu_health: Environment lacked {}'.format(err))
 
