@@ -21,7 +21,9 @@ Most of the scripts are thought for running them from the computer you are worki
 Because all the remote scripts rsync all the needed files to the rig before doing anything, you don't need to keep an up-to-date repository on the rig.
 
 ### Configuration
-Make a copy of `cfg/127.0.0.1.automine_config.sample.json` with your rig's IP address or hostname and without `.sample` in the filename. You may have a number of rigs, with a copy of each config file. Be sure to replace all occurences of `FILL_THIS_IN` with something meaningful.
+Create a directory to hold your rig configuration.  The expected value for this is `<my-home-dir>/.automine/rig_config`.  In this directory, make a copy of `cfg/127.0.0.1.automine_config.sample.json` with your rig's IP address or hostname and without `.sample` in the filename. You may have a number of rigs, with a copy of each config file. Be sure to replace all occurences of `FILL_THIS_IN` with something meaningful.
+
+You can use a different directory instead of `<my-home-dir>/.automine/rig_config`.  When doing so, you must export the path of the directory in the environment variable 'AUTOMINE_CFG_DIR' when running any of the automine commands.
 
 Before running any scripts, set RIG_HOST or automine will not know which rig you are working with:
 
