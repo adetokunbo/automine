@@ -57,7 +57,6 @@ add_symlinks() {
     set +u
 }
 
-source $SCRIPT_DIR/install_ethminer_deps.sh
 set -e
 ensure_repo_dir
 ensure_bin_dir
