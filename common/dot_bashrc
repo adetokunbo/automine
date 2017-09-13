@@ -21,7 +21,7 @@ mnr_nvidia_devices() {
 }
 
 mnr_nvinfo_mini() {
-    nvidia-smi --query-gpu=index,name,pci.sub_device_id --format=csv
+    nvidia-smi --query-gpu=index,name,pci.bus,pci.sub_device_id,vbios_version --format=csv  
 }
 
 mnr_nvinfo_lots() {
