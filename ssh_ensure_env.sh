@@ -26,7 +26,7 @@ if [ ! -f ${AUTOMINE_CFG_PATH} ]; then
 	exit
 fi
 
-$(./show_config.py shell_exports)
+eval $(./show_config.py shell_exports)
 
 # Fail with a useful warning if the deprecated value for $AUTOMINE_ALERT_DIR is set
 if [ -n ${AUTOMINE_ALERT_DIR:=''} ] || [ -z ${AUTOMINE_RUNTIME_DIR} ]; 
