@@ -16,6 +16,42 @@ function this_dir() {
     echo $script_path
 }
 
+_sed_replace_vars() {
+    for varname in $@
+    do
+        printf ' -e'
+        printf " s|{{\\\$${varname}}}|${!varname}|g"
+    done
+}
+
+_sed_cp_base() {
+    local tee_prefix=$1
+    shift
+    local src=$1
+    shift
+    local dst_dir=$1
+    shift
+    [[ -n $src ]] && [[ -n $dst_dir ]] && (( ${#@} > 0 )) && {
+        local tee_cmd="${tee_prefix} tee"
+        [[ $tee_prefix == ' ' ]] && tee_cmd="tee"
+        echo
+        echo 'Before: ..'
+        cat $src
+        echo
+        echo 'After: ...'
+        sed $(_sed_replace_vars $@) $src | ${tee_cmd} $dst_dir/${src##*/}
+        echo
+    }
+}
+
+_sed_cp() {
+    _sed_cp_base ' ' "$@"
+}
+
+_sudo_sed_cp() {
+    _sed_cp_base 'sudo' "$@"
+}
+
 # Use loginctl to allow user-owned system services at startup
 enable_user_systemd_services() {
     loginctl enable-linger $LOGNAME
@@ -26,34 +62,20 @@ cp_user_systemd_units() {
     local here=$(this_dir)
     local systemd_dir=${HOME}/.config/systemd/user
     mkdir -p $systemd_dir
-    sed -e "s|{{\$RIG_TYPE}}|$RIG_TYPE|g" \
-        ${here}/automine.service \
-        | tee $systemd_dir/automine.service
-
+    _sed_cp ${here}/automine.service $systemd_dir 'RIG_TYPE'
     cp -v ${here}/automine_triggers.service $systemd_dir
-    sed -e "s|{{\$AUTOMINE_ALERT_DIR}}|$AUTOMINE_ALERT_DIR|g" \
-        ${here}/automine_triggers.path \
-        | tee $systemd_dir/automine_triggers.path
+    _sed_cp ${here}/automine_triggers.path $systemd_dir 'AUTOMINE_ALERT_DIR'
     cp -v ${here}/automine_track_scan_log.timer $systemd_dir
-    sed -e "s|{{\$AUTOMINE_ALERT_DIR}}|$AUTOMINE_ALERT_DIR|g" \
-        -e "s|{{\$AUTOMINE_LOG_DIR}}|$AUTOMINE_LOG_DIR|g" \
-        ${here}/automine_track_scan_log.service \
-        | tee $systemd_dir/automine_track_scan_log.service
+    _sed_cp ${here}/automine_track_scan_log.service $systemd_dir 'AUTOMINE_ALERT_DIR' 'AUTOMINE_LOG_DIR'
     cp -v ${here}/automine_gpu_health.timer $systemd_dir
-    sed -e "s|{{\$AUTOMINE_ALERT_DIR}}|$AUTOMINE_ALERT_DIR|g" \
-        -e "s|{{\$AUTOMINE_LOG_DIR}}|$AUTOMINE_LOG_DIR|g" \
-        -e "s/{{\$RIG_TYPE}}/$RIG_TYPE/g" \
-        ${here}/automine_gpu_health.service \
-        | tee $systemd_dir/automine_gpu_health.service
-    sed -e "s|{{\$AUTOMINE_ALERT_DIR}}|$AUTOMINE_ALERT_DIR|g" \
-        ${here}/automine_needs_reboot.path \
-        | tee $systemd_dir/automine_needs_reboot.path
-    cp -v ${here}/automine_needs_reboot.service $systemd_dir
+    _sed_cp ${here}/automine_gpu_health.service $systemd_dir 'AUTOMINE_ALERT_DIR' 'AUTOMINE_LOG_DIR' 'RIG_TYPE'
+    _sed_cp ${here}/automine_needs_reboot.path $systemd_dir 'AUTOMINE_ALERT_DIR'
+    _sed_cp ${here}/automine_needs_reboot.service $systemd_dir 'AUTOMINE_ALERT_DIR'
     cp -v ${here}/automine_wait_then_reboot.timer $systemd_dir
-    sed -e "s|{{\$AUTOMINE_ALERT_DIR}}|$AUTOMINE_ALERT_DIR|g" \
-        ${here}/automine_wait_then_reboot.service \
-        | tee $systemd_dir/automine_wait_then_reboot.service
-    cp -v ${here}/automine_start_with_overclocks.service $systemd_dir
+    _sed_cp ${here}/automine_wait_then_reboot.service $systemd_dir 'AUTOMINE_ALERT_DIR'
+    cp -v ${here}/automine_wait_then_overclock.timer $systemd_dir
+    _sed_cp ${here}/automine_wait_then_overclock.service $systemd_dir 'AUTOMINE_ALERT_DIR'
+    cp -v ${here}/automine_machine_restart.service $systemd_dir
 }
 
 # Update, then copy the overclock systemd units to the superuser systemd
@@ -62,16 +84,7 @@ install_overclock_systemd_units() {
     local here=$(this_dir)
     local systemd_dir=/lib/systemd/system
     sudo cp -v ${here}/automine_overclock.path $systemd_dir
-    echo 'Before: ..'
-    cat ${here}/automine_overclock.service
-    echo
-    echo 'After: ...'
-    sed -e "s|{{\$HOME}}|$HOME|g" \
-        -e "s|{{\$AUTOMINE_LOG_DIR}}|$AUTOMINE_LOG_DIR|g" \
-        -e "s/{{\$RIG_TYPE}}/$RIG_TYPE/g" \
-        ${here}/automine_overclock.service \
-        | sudo tee $systemd_dir/automine_overclock.service
-    echo
+    _sudo_sed_cp ${here}/automine_overclock.service $systemd_dir 'HOME' 'AUTOMINE_LOG_DIR' 'RIG_TYPE'
 }
 
 # Update, then copy the reboot systemd units to the superuser systemd
@@ -79,11 +92,7 @@ install_overclock_systemd_units() {
 install_reboot_systemd_units() {
     local here=$(this_dir)
     local systemd_dir=/lib/systemd/system
-    echo
-    sed -e "s|{{\$AUTOMINE_ALERT_DIR}}|$AUTOMINE_ALERT_DIR|g" \
-        ${here}/automine_reboot.path \
-        | sudo tee $systemd_dir/automine_reboot.path
-    echo
+    _sudo_sed_cp ${here}/automine_reboot.path $systemd_dir 'AUTOMINE_ALERT_DIR'
     sudo cp -v ${here}/automine_reboot.service $systemd_dir
 }
 

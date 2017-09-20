@@ -23,6 +23,9 @@ export AUTOMINE_ALERT_DIR=${AUTOMINE_RUNTIME_DIR}/triggers
 export AUTOMINE_LOG_DIR=${AUTOMINE_RUNTIME_DIR}/logs
 set +u
 
+# Maybe trigger an update of the overclocks
+[[ -f ${AUTOMINE_ALERT_DIR}/overclock_on_restart.txt ]] && /bin/systemctl --user start automine_wait_then_overclock.timer
+
 # Monitor with simple alerts from grepping the logs.
 #
 # The scan log tool performs a simple grep of known errors and updates files in
