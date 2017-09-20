@@ -1,0 +1,9 @@
+[Unit]
+Description=automine: check that the network is up after a reboot
+
+[Service]
+ExecStart=/bin/bash -c "/bin/ping -q -c 3 cloudflare.com >> /dev/null || date -u +'ntwrk:%Y-%m-%dT%H:%M:%SZ' >> ~/.automine/var/triggers/failed_gpus.txt"
+ExecStartPost=/bin/systemctl --user disable --now automine_check_network.timer
+
+[Install]
+WantedBy=default.target

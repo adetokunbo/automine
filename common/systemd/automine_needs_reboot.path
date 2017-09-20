@@ -1,5 +1,5 @@
 [Unit]
-Description=automine:trigger: a request from an unhealthy gpu for a reboot
+Description=automine:trigger: a request from an unhealthy machine for a reboot
 
 [Path]
 PathChanged={{$AUTOMINE_ALERT_DIR}}/failed_gpus.txt

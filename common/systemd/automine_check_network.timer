@@ -1,0 +1,8 @@
+[Unit]
+Description=automine:timer: check that the network is up after a reboot
+
+[Timer]
+OnBootSec=150
+
+[Install]
+WantedBy=timers.target
