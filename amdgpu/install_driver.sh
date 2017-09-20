@@ -1,5 +1,5 @@
 #/bin/bash
-# Install the AMDGPU drivers and SDK
+# Install the AMDGPU drivers and SDK on this rig.
 
 install_amdgpu() {
     cd $HOME/.automine/lib/install

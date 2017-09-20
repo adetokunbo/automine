@@ -1,4 +1,12 @@
 #!/bin/bash
+# Corrects the grub cmdline to ensure a stable network interface name whenever
+# the number of GPUs changes.
+#
+# Also:
+#   Updates the SSHD config, to block any password log-ons
+#   Installs a minimal amount of security-focused software
+
+
 set -e
 
 # Update grub to add custom commands that

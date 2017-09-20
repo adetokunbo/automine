@@ -1,5 +1,9 @@
 #!/bin/bash
-# Creates an edid using the instructions here: http://bit.ly/2saRBPy
+# Ensures the xorg.conf matches the rig's NVIDIA GPUs, and also ensures a usable
+# edid is present.
+#
+# The edid may be generated from a connected monitor; doing so follows the
+# instructions here: http://bit.ly/2saRBPy
 
 set -e
 

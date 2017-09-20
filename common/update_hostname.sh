@@ -1,5 +1,5 @@
 #!/bin/bash
-# Updates the hostname of the script
+# Updates the hostname of the rig.
 
 current_hostname() {
     cat /etc/hostname

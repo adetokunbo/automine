@@ -1,4 +1,7 @@
 #!/bin/bash
+# Update bashrc to include useful commands
+#
+# Also updates screenrc
 
 AUTOMINE_RC=bin/automine/common/dot_bashrc
 

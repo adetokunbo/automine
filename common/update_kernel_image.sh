@@ -1,6 +1,5 @@
 #!/bin/bash
-
-set -e
+# Rebuild the kernel image on the rig.
 
 update_image() {
     local image_id=$1
@@ -19,7 +18,6 @@ update_image() {
     sudo reboot
 }
 
-# set -u: fail if a referenced environment variable is not set
-set -u
+set -e
+set -u  # fail if a referenced environment variable is not set
 update_image $TARGET_KERNEL
-set +u

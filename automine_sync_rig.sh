@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source ssh_ensure_env.sh
+source automine_ensure_env.sh
 
 # Ensure the runtime directories are present
 _ensure_rig_runtime_dirs() {

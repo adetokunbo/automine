@@ -1,4 +1,5 @@
 #!/bin/bash
+# Upgrades the system, installing the latest security patches, etc.
 
 upgrade_system() {
     local additional_pkgs=$1

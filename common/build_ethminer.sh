@@ -1,4 +1,5 @@
 #/bin/bash
+# Build the version of the ethminer for the rig's $RIG_TYPE.
 
 this_dir() {
     local script_path="${BASH_SOURCE[0]}"
