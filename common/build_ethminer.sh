@@ -30,35 +30,40 @@ ensure_bin_dir() {
 }
 
 pull_fresh_ethminer() {
-    cd $REPO_DIR
-    [[ -d cpp-ethereum ]] && rm -fR cpp-ethereum
-    [[ -d ethminer ]] && rm -fR ethminer
-    git clone https://github.com/ethereum-mining/ethminer
+    cd $REPO_DIR && [[ -d ethminer ]] && rm -fR ethminer
+
+    local branch_name=${ETHMINER_BRANCH:=''}
+    local github_user=${ETHMINER_GITHUB:='ethereum-mining'}
+    local branch_clause=''
+    [[ -z $branch_name ]] || branch_clause="-b $branch_name"
+    git clone $branch_clause https://github.com/$github_user/ethminer
+
+    local commit=${ETHMINER_COMMIT:=''}
+    [[ -z $commit ]] || {
+        cd $REPO_DIR/ethminer && git reset --hard $commit
+    }
 }
 
 build_ethminer() {
-    set -u
     cd $REPO_DIR/ethminer
     mkdir build
     cd build
     cmake .. -DETHASHCUDA=${ETHASHCUDA}
     cmake --build .
-    set +u
 }
 
 cp_to_bin() {
-    cp -v $REPO_DIR/ethminer/build/ethminer/ethminer $BIN_DIR
+    cp -v $REPO_DIR/ethminer/build/ethminer/ethminer $BIN_DIR/ethminer
 }
 
 add_symlinks() {
-    set -u
     local rig_dir=$(dirname $SCRIPT_DIR)/$RIG_TYPE
     ln -sf ${rig_dir}/launch_screen_session.sh $BIN_DIR/mine_in_a_screen
     [ -f ${rig_dir}/add_symlinks.sh ] && source ${rig_dir}/add_symlinks.sh
-    set +u
 }
 
 set -e
+set -u
 ensure_repo_dir
 ensure_bin_dir
 pull_fresh_ethminer
