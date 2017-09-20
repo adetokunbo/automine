@@ -1,9 +1,9 @@
 # Rig configuration
 
-This directory should contain files that configure the rigs.
-It's empty apart from some sample files
+This directory contain samples of files that configure the rigs.
+Appropriately named and updated copies of the sample file should be copied to the configuration directory, which defaults to `<my-home-dir>/.automine/rig_config`.  E.g,
 
-- `<myhostname>.automine_config.json` is used to configure the script that sets overclock settings on `myhostname`
+- `<my-home-dir>/.automine/rig_config/<myhostname>.automine_config.json` is used to configure the script that sets overclock settings on `myhostname`
    
 ## Environment
 
@@ -23,7 +23,7 @@ The ethminer section optionally contains a nested environment section.  This spe
 
 ## Overclock configuration
 
-Files that match the pattern `<hostname>.automine_config.json` are used to configure overclocking of nvidia GPUs.
+Files that match the pattern `<myhostname>.automine_config.json` are used to configure overclocking of nvidia GPUs.
 
 The nvidia section contains named json configuration objects that can either
 

@@ -2,7 +2,7 @@
 
 source ssh_ensure_env.sh
 ssh ${SSH_USER} -p${SSH_PORT} mkdir -p \~/bin
-cp cfg/${RIG_HOST}.automine_config.json automine_config.json
+cp ${AUTOMINE_CFG_PATH} automine_config.json
 rsync -avz -e "ssh -p ${SSH_PORT}" --del --exclude=cfg/* . ${SSH_USER}:~/bin/automine
 rm automine_config.json
 
