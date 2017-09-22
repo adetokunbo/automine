@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source automine_ensure_env.sh
+source _automine_ensure_env.sh
 
 # Ensure the runtime directories are present
 _ensure_rig_runtime_dirs() {
@@ -11,9 +11,13 @@ _ensure_rig_runtime_dirs() {
 
 # Sync the scripts and rig config
 _sync_scripts_and_rig_config() {
+    this_dir=$(dirname "${BASH_SOURCE[${#BASH_SOURCE[@]} - 1]}")
+    pushd $this_dir
+    echo "Syncing automine to $RIG_HOST from $(pwd)"
     cp ${AUTOMINE_CFG_PATH} automine_config.json
     rsync -avz -e "ssh -p ${SSH_PORT}" --del --exclude=cfg/* . ${SSH_USER}:~/bin/automine
     rm automine_config.json
+    popd
 }
 
 # Add the symlinks used in the commands

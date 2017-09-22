@@ -26,7 +26,8 @@ if [ ! -f ${AUTOMINE_CFG_PATH} ]; then
 	exit
 fi
 
-eval $(./show_config.py shell_exports)
+this_dir=$(dirname "${BASH_SOURCE[${#BASH_SOURCE[@]} - 1]}")
+eval $(${this_dir}/show_config.py shell_exports)
 
 # Fail with a useful warning if the deprecated value for $AUTOMINE_ALERT_DIR is set
 if [ -n ${AUTOMINE_ALERT_DIR:=''} ] || [ -z ${AUTOMINE_RUNTIME_DIR} ]; 
