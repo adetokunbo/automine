@@ -41,7 +41,7 @@ fi
 if [ "${USE_PUBLIC:=false}" = true ]; then
 	SSH_USER="${RIG_USER}@${PUBLIC_HOSTNAME}"
 	SSH_PORT=${PUBLIC_SSH_PORT:=0}
-	[ ${SSH_PORT}==0 ] && SSH_PORT=${LOCAL_SSH_PORT:=22}
+	(( ${SSH_PORT} == 0 )) && SSH_PORT=${LOCAL_SSH_PORT:=22}
 else
 	SSH_USER=${RIG_USER}@${RIG_HOST}
 	SSH_PORT=${LOCAL_SSH_PORT:=22}
