@@ -113,6 +113,14 @@ def _configure_logger():
             loggers = cfg.get('loggers')
             if '__name__' in loggers:
                 loggers[log_name] = loggers.pop('__name__')
+
+                # add logging to the console if env var is set
+                log_to_console = 'AUTOMINE_LOG_TO_CONSOLE' in os.environ
+                if log_to_console and 'console' in handlers:
+                    logger_handlers = loggers[log_name].get('handlers')
+                    if logger_handlers:
+                        logger_handlers.append('console')
+
             dictConfig(cfg)
     except Exception as err:  # pylint: disable=broad-except
         logging.basicConfig()
