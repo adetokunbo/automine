@@ -63,4 +63,4 @@ set -u  # fail if any environment variable is not set
 _ensure_rig_runtime_dirs
 _sync_scripts_and_rig_config
 _add_command_symlinks
-_maybe_sync_amdgpu_sdk $1
+_maybe_sync_amdgpu_sdk ${1:-"not_install_driver"}
