@@ -1,4 +1,6 @@
 #!/bin/bash
+# Ensures the Ubuntu desktop is installed and that the RIG user is automatically
+# logged on
 
 set -e  # fail on any error
 

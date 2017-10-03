@@ -1,4 +1,5 @@
 #/bin/bash
+# Installs geth as a background service on the rig.
 
 function this_dir() {
     local script_path="${BASH_SOURCE[0]}"

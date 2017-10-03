@@ -1,4 +1,5 @@
 #/bin/bash
+# Install the NVIDIA driver on this rig.
 
 install_cuda() {
     # Derived from instructions in https://developer.nvidia.com/cuda-downloads

@@ -1,19 +1,39 @@
 #/bin/bash
+# Install the AMDGPU drivers and SDK on this rig.
 
-# TODO: update remote script to set the DRIVER_VERSION when calling amdgpu/install_driver.sh
-#DRIVER_VERSION=17.10-414273
-#DRIVER_VERSION=16.30.3-306809
-#DRIVER_VERSION=16.60-379184
-DRIVER_VERSION=${DRIVER_VERSION:=16.40-348864}
+install_amdgpu() {
+    cd $HOME/.automine/lib/install
 
-CURRENT_DIR=$(pwd)
-mkdir -p $HOME/tmp
-cd $HOME/tmp
-tar -Jxvf  ~/var/downloads/amdgpu/amdgpu-pro-${DRIVER_VERSION}.tar.xz
-cd amdgpu-pro-${DRIVER_VERSION}
-./amdgpu-pro-install  # takes 5-10 mins
-cd $CURRENT_DIR
-source install_sdk.sh
+    # Derived from instructions @ http://bit.ly/2ygD4D3
+    echo "Installing the AMDGPU driver"
 
+    local download_tar=amdgpu-pro-${AMDGPU_VERSION}.tar.xz
+    local download_url=https://www2.ati.com/drivers/linux/ubuntu/$download_tar
+    local referer_url=http://support.amd.com
 
+    [[ -f $download_tar ]] || wget --referer=$referer_url $download_url
+    tar -Jxvf $download_tar
+    [[ -f amdgpu-pro-${AMDGPU_VERSION}/amdgpu-pro-install ]] || {
+        echo "Could not find the driver installer"
+        return 1
+    }
+    cd amdgpu-pro-${AMDGPU_VERSION}
+    ./amdgpu-pro-install  # takes 5-10 mins
+}
 
+install_amdgpu_sdk() {
+    cd $HOME/.automine/lib/install
+
+    echo "Installing the AMD GPU SDK"
+    local download_tar=AMD-APP-SDKInstaller-${AMDGPU_SDK_VERSION}-linux64.tar.bz2
+    tar -xf $download_tar
+    [[ -f ./AMD-APP-SDK-${AMDGPU_SDK_VERSION}-linux64.sh ]] || {
+        echo "Could not find the SDK installer"
+        return 1
+    }
+    sudo ./AMD-APP-SDK-${AMDGPU_SDK_VERSION}-linux64.sh
+}
+
+set -u  # fail if any specified environment variables are unset
+install_amdgpu
+install_amdgpu_sdk

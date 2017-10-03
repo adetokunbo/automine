@@ -1,4 +1,5 @@
 #!/bin/bash
+# Installs the systemd units that run, schedule and control automine tasks.
 
 function this_dir() {
     local script_path="${BASH_SOURCE[0]}"
