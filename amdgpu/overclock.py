@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """A module that execute commands to overclock nvidia chips.
 
-Prequisites: overclock values should be present in
+Prerequisites: overclock values should be present in
 $HOME/.automine/automine_config.json
 
 """

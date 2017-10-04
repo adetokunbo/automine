@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """A module that execute commands to confirm the health of the gpus
 
-Whenever a gpu is unhealthy, a trigger file in AUTOMINE_ALERT_DIR is updated.
+Whenever a GPU is unhealthy, a trigger file in the AUTOMINE_ALERT_DIR is
+updated.
 
-Prequisites: the nvidia-smi tool should be installed
+Prerequisites: the nvidia-smi tool should be installed
 
 """
 
@@ -65,7 +66,7 @@ def perform_status_check():
 
 
 def _mark_bad_gpu(trigger_path, gpu_index):
-    """Leave a record that a GPU was bad."""
+    """Leave a record indicating that a GPU was bad."""
     now = datetime.utcnow().isoformat() + 'Z'
     with open(trigger_path, 'a') as out:
         print('gpu{:02d}:{}'.format(int(gpu_index), now), file=out)
@@ -111,13 +112,13 @@ def _configure_logger():
 
 
 def main():
-    """The command line entry point """
+    """The command-line entry point"""
     try:
         _configure_logger()
         perform_status_check()
         return 0
     except Exception:  # pylint: disable=broad-except
-        _LOG.error('could not perform overclock', exc_info=True)
+        _LOG.error('could not perform GPU health check', exc_info=True)
         return 1
 
 

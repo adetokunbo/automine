@@ -9,7 +9,6 @@ is in use.
 
 """
 
-
 from datetime import datetime, timedelta
 import json
 import logging
@@ -151,7 +150,7 @@ def main():
         check_the_tracker()
         return 0
     except Exception:  # pylint: disable=broad-except
-        _LOG.error('could not perform overclock', exc_info=True)
+        _LOG.error('could not track the scan log', exc_info=True)
         return 1
 
 

@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """A module that scans standard input for errors.
 
-The log substrings to test the input for are configured in by a json file that
-maps them to the path of the trigger file to be updated when they are detected
+The substrings that the logfile lines are tested for are configured by a json
+file that maps each test to the path of a trigger file to be updated when the
+test succeeds.
 
 """
 
@@ -201,7 +202,7 @@ def main():
         perform_scan(sys.stdin, read_cfg(cfg_path))
         return 0
     except Exception:  # pylint: disable=broad-except
-        _LOG.error('could not perform overclock', exc_info=True)
+        _LOG.error('could not scan the log output', exc_info=True)
         return 1
 
 
