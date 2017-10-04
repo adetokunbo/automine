@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """A module that execute commands to confirm the health of the gpus
 
 Whenever a gpu is unhealthy, a trigger file in AUTOMINE_ALERT_DIR is updated.
@@ -6,8 +6,6 @@ Whenever a gpu is unhealthy, a trigger file in AUTOMINE_ALERT_DIR is updated.
 Prequisites: the nvidia-smi tool should be installed
 
 """
-
-from __future__ import print_function
 
 from datetime import datetime
 import json
@@ -45,7 +43,7 @@ def perform_status_check():
     try:
         out_dir = os.environ['AUTOMINE_ALERT_DIR']
         out_path = os.path.join(out_dir, 'failed_gpus.txt')
-        show_gpus = subprocess.check_output(_SHOW_GPUS_CMD.split())
+        show_gpus = subprocess.check_output(_SHOW_GPUS_CMD.split()).decode()
 
         # check if the output indicates that a GPU is 'lost'
         really_bad = _A_REALLY_BAD_WAY_RX.search(show_gpus)
@@ -86,9 +84,9 @@ def _configure_logger():
         log_name = _log_name()
         cfg_path = os.path.join(log_dir, 'logging_config.json')
         with open(cfg_path) as src:
-            cfg = json.load(src, 'utf8')
+            cfg = json.load(src)
             handlers = cfg.get('handlers')
-            for handler in iter(handlers.itervalues()):
+            for handler in iter(handlers.values()):
                 filename = handler.get('filename')
                 if filename:
                     filename = filename.replace('{{AUTOMINE_LOG_DIR}}',

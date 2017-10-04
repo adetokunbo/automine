@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """A module that scans standard input for errors.
 
 The log substrings to test the input for are configured in by a json file that
@@ -6,10 +6,7 @@ maps them to the path of the trigger file to be updated when they are detected
 
 """
 
-from __future__ import print_function
-
 from datetime import datetime, timedelta
-import codecs
 import json
 from logging.config import dictConfig
 import logging
@@ -54,7 +51,7 @@ def read_cfg(cfg_path):
         _info(_CFG_MESSAGE.format('FALLBACK_POOL', fallback_pool_host))
         raw_dict = json.load(open(cfg_path))
         cfg_dict = {}
-        for key, value in iter(raw_dict.items()):
+        for key, value in iter(list(raw_dict.items())):
             new_key = key.replace("${FALLBACK_POOL}", fallback_pool_host)
             new_value = value.replace("${AUTOMINE_ALERT_DIR}",
                                       automine_alert_dir)
@@ -92,7 +89,7 @@ def _tracker_path():
 def _print_cfg(scan_cfg):
     """Initialize the log of the scan log."""
     _info(u"tracker_path: {}".format(_tracker_path()))
-    for subst, trigger_path in iter(scan_cfg.items()):
+    for subst, trigger_path in iter(list(scan_cfg.items())):
         _info(u"config: {} <- {}".format(trigger_path, subst))
 
 
@@ -131,7 +128,7 @@ def perform_scan(src, scan_cfg):
         latest_log = _update_log_tracker(now, latest_log, a_line)
 
         # scan for the configured trigger lines
-        for subst, trigger_path in iter(scan_cfg.items()):
+        for subst, trigger_path in iter(list(scan_cfg.items())):
             if a_line.find(subst) == -1:
                 consecutive_zeroes = 0
                 continue
@@ -167,9 +164,9 @@ def _configure_logger():
         log_name = _log_name()
         cfg_path = os.path.join(log_dir, 'logging_config.json')
         with open(cfg_path) as src:
-            cfg = json.load(src, 'utf8')
+            cfg = json.load(src)
             handlers = cfg.get('handlers')
-            for handler in iter(handlers.itervalues()):
+            for handler in iter(handlers.values()):
                 filename = handler.get('filename')
                 if filename:
                     filename = filename.replace('{{AUTOMINE_LOG_DIR}}',
@@ -201,8 +198,7 @@ def main():
         if not os.path.exists(cfg_path):
             _info("No scan_log.json at {}, exiting".format(cfg_path))
             return 1
-        reader = codecs.getreader('utf8')
-        perform_scan(reader(sys.stdin), read_cfg(cfg_path))
+        perform_scan(sys.stdin, read_cfg(cfg_path))
         return 0
     except Exception:  # pylint: disable=broad-except
         _LOG.error('could not perform overclock', exc_info=True)

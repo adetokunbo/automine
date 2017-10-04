@@ -1,12 +1,10 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """A module that execute commands to overclock nvidia chips.
 
 Prequisites: overclock values should be present in
 $HOME/.automine/automine_config.json
 
 """
-
-from __future__ import print_function
 
 import json
 import logging
@@ -58,22 +56,24 @@ def _amd_index(sysfs_gpu_name):
 def perform_overclock(the_cfg):
     """Perform the overclock."""
     sysfs_cards = subprocess.check_output(_LIST_SYSFS_GPUS_CMD, shell=True)
+    lines = sysfs_cards.splitlines()
     gpu_indices = [
-        _amd_index(x) for x in sysfs_cards.splitlines() if _is_amd(x.strip())
+        _amd_index(x.decode()) for x in lines if _is_amd(x.decode().strip())
     ]
     one_gpu_script = _sibling_path('overclock_one_gpu.sh')
     for index in gpu_indices:
         child_env = dict(os.environ)
         child_env['AMD_GPU_INDEX'] = index
-        for env_name, value in iter(the_cfg.items()):
-            child_env["AMD_{0}".format(env_name.upper())] = str(value)
+        for env_name, value in iter(list(the_cfg.items())):
+            child_env["AMD_{0}".format(env_name.upper())] = str.format("{}",
+                                                                       value)
         headline = "updating gpu {}".format(index)
         _info(
             subprocess.check_output(
                 one_gpu_script,
                 executable='/bin/bash',
                 env=child_env,
-                shell=True),
+                shell=True).decode(),
             headline=headline)
 
 
@@ -107,9 +107,9 @@ def _configure_logger():
         log_name = _log_name()
         cfg_path = os.path.join(log_dir, 'logging_config.json')
         with open(cfg_path) as src:
-            cfg = json.load(src, 'utf8')
+            cfg = json.load(src)
             handlers = cfg.get('handlers')
-            for handler in iter(handlers.itervalues()):
+            for handler in iter(handlers.values()):
                 filename = handler.get('filename')
                 if filename:
                     filename = filename.replace('{{AUTOMINE_LOG_DIR}}',

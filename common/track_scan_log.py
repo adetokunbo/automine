@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """A module that checks if scan_log is continuing to run.
 
 track_scan_log checks that the tracker file created by scan_log exists and has
@@ -9,7 +9,6 @@ is in use.
 
 """
 
-from __future__ import print_function
 
 from datetime import datetime, timedelta
 import json
@@ -119,9 +118,9 @@ def _configure_logger():
         log_name = _log_name()
         cfg_path = os.path.join(log_dir, 'logging_config.json')
         with open(cfg_path) as src:
-            cfg = json.load(src, 'utf8')
+            cfg = json.load(src)
             handlers = cfg.get('handlers')
-            for handler in iter(handlers.itervalues()):
+            for handler in iter(handlers.values()):
                 filename = handler.get('filename')
                 if filename:
                     filename = filename.replace('{{AUTOMINE_LOG_DIR}}',
