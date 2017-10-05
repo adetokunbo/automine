@@ -30,7 +30,7 @@ this_dir=$(dirname "${BASH_SOURCE[${#BASH_SOURCE[@]} - 1]}")
 eval $(${this_dir}/show_config.py shell_exports)
 
 # Fail with a useful warning if the deprecated value for $AUTOMINE_ALERT_DIR is set
-if [ -n ${AUTOMINE_ALERT_DIR:=''} ] || [ -z ${AUTOMINE_RUNTIME_DIR} ]; 
+if [ ! -z "${AUTOMINE_ALERT_DIR}" ] || [ -z ${AUTOMINE_RUNTIME_DIR} ]; 
 then
     echo "AUTOMINE_ALERT_DIR is deprecated, instead: "
     echo "1) set \$AUTOMINE_RUNTIME_DIR to \$HOME/.automine/var"
