@@ -23,12 +23,13 @@ __automine_complete() {
     if [[ $last_word == "automine" ]]
     then
         local cur=${COMP_WORDS[COMP_CWORD]}
-        read -r -a COMPREPLY <<< $(__automine_find_completions $cur)
+        COMPREPLY=($(echo $(__automine_find_completions $cur)))
+
     fi
     if [[ $last_word == "remote_run" ]]
     then
         local cur=${COMP_WORDS[COMP_CWORD]}
-        read -r -a COMPREPLY <<< $(__automine_find_all_remote_subcommands $cur)
+        COMPREPLY=($(echo $(__automine_find_all_remote_subcommands $cur)))
     fi
 }
 
@@ -54,7 +55,7 @@ __automine_list_commands() {
 
 automine() {
     local this_dir=$(dirname "${BASH_SOURCE[${#BASH_SOURCE[@]} - 1]}")
-    read -r -a all_commands <<< $(__automine_find_completions)
+    all_commands=($(echo $(__automine_find_completions)))
     local command=$1
     if [ "$#" -gt 0 ];
     then
@@ -62,6 +63,7 @@ automine() {
     fi
 
     local found=0
+    
     for name in "${all_commands[@]}"; do
         [[ $name == "$command" ]] && {
             local cmd_script=${this_dir}/automine_${command}.sh
