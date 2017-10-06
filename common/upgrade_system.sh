@@ -9,7 +9,9 @@ upgrade_system() {
     sudo apt -y dist-upgrade
     sudo apt -y autoremove
     [[ -n additional_pkgs ]] && sudo apt -y install $additional_pkgs
-    sudo reboot
+
+    # trigger a reboot where the automine service restarts automatically
+    date -u +'upgrd:%Y-%m-%dT%H:%M:%SZ' >> ~/.automine/var/triggers/failed_gpus.txt
 }
 
 upgrade_system "$@"
