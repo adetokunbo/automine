@@ -1,11 +1,9 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """A module that execute commands to overclock nvidia chips.
 
 Prequisites: overclock values should be present in ~/.automine/automine_config.json
 
 """
-
-from __future__ import print_function
 
 import json
 import logging
@@ -64,7 +62,7 @@ def _show_ethminer_opts(the_cfg):
     rig_type = _get_sub_cfg('environment', the_cfg)['RIG_TYPE']
     rig_type_opt = [_ETHMINER_RIG_TYPE_OPTS[rig_type]]
     _fmt = _format_ethminer_opt
-    other_opts = [_fmt(key, value) for (key, value) in iter(cfg.iteritems())]
+    other_opts = [_fmt(key, value) for (key, value) in iter(list(cfg.items()))]
     return " ".join(rig_type_opt + other_opts)
 
 
@@ -72,7 +70,7 @@ def _show_shell_exports(the_cfg):
     """Generate text to declare the configured export variables in a bash shell"""
     cfg = _get_sub_cfg('environment', the_cfg)
     as_exports = [
-        "{}={}".format(key, val) for key, val in iter(cfg.iteritems())
+        "{}={}".format(key, val) for key, val in iter(list(cfg.items()))
     ]
     return " ".join(["export"] + as_exports)
 

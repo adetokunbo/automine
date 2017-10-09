@@ -1,34 +1,36 @@
 # Test if the miner screen session is present, switch to it if is.
+
+# include the user bin in the PATH
+PATH=$HOME/bin:$PATH
+
 mnr_screen() {
-    local em_screen=$(screen -ls | grep ethminer | awk {'print $1'})
-    [ -z ${em_screen} ] || screen -D -R
+    automine_run show_screen
 }
 
 # Start the miner in its screen session
 mnr_up() {
-    systemctl --user start automine
+    automine_run minerctl start
 }
 
 # Shutdown the miner and its screen session
 mnr_down() {
     echo "Shutting down the miner"
-    systemctl --user stop automine
+    automine_run minerctl stop
 }
 
 # List the Nvidia PCI bus devices
 mnr_nvidia_devices() {
-    lspci -vvv | grep -A 20 NVIDIA
+    automine_run gpu_info lspci
 }
 
 mnr_nvinfo_mini() {
-    nvidia-smi --query-gpu=index,name,pci.bus,pci.sub_device_id,vbios_version --format=csv  
+    automine_run gpu_info mini
 }
 
 mnr_nvinfo_lots() {
-    nvidia-smi --query-gpu=index,name,pci.sub_device_id,clocks.max.sm,clocks.sm,clocks.max.mem,clocks.mem,power.limit,power.draw,power.min_limit,power.max_limit --format=csv
+    automine_run gpu_info
 }
 
-mnr_overclock_info() {
-   cat ~/.automine/automine_config.json
+mnr_rig_config() {
+    automine_show_config
 }
-

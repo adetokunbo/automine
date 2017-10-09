@@ -1,13 +1,12 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """A module that execute commands to confirm the health of the gpus
 
-Whenever a gpu is unhealthy, a trigger file in AUTOMINE_ALERT_DIR is updated.
+Whenever a GPU is unhealthy, a trigger file in the AUTOMINE_ALERT_DIR is
+updated.
 
-Prequisites: the nvidia-smi tool should be installed
+Prerequisites: the nvidia-smi tool should be installed
 
 """
-
-from __future__ import print_function
 
 from datetime import datetime
 import json
@@ -45,7 +44,7 @@ def perform_status_check():
     try:
         out_dir = os.environ['AUTOMINE_ALERT_DIR']
         out_path = os.path.join(out_dir, 'failed_gpus.txt')
-        show_gpus = subprocess.check_output(_SHOW_GPUS_CMD.split())
+        show_gpus = subprocess.check_output(_SHOW_GPUS_CMD.split()).decode()
 
         # check if the output indicates that a GPU is 'lost'
         really_bad = _A_REALLY_BAD_WAY_RX.search(show_gpus)
@@ -67,7 +66,7 @@ def perform_status_check():
 
 
 def _mark_bad_gpu(trigger_path, gpu_index):
-    """Leave a record that a GPU was bad."""
+    """Leave a record indicating that a GPU was bad."""
     now = datetime.utcnow().isoformat() + 'Z'
     with open(trigger_path, 'a') as out:
         print('gpu{:02d}:{}'.format(int(gpu_index), now), file=out)
@@ -86,9 +85,9 @@ def _configure_logger():
         log_name = _log_name()
         cfg_path = os.path.join(log_dir, 'logging_config.json')
         with open(cfg_path) as src:
-            cfg = json.load(src, 'utf8')
+            cfg = json.load(src)
             handlers = cfg.get('handlers')
-            for handler in iter(handlers.itervalues()):
+            for handler in iter(handlers.values()):
                 filename = handler.get('filename')
                 if filename:
                     filename = filename.replace('{{AUTOMINE_LOG_DIR}}',
@@ -98,6 +97,14 @@ def _configure_logger():
             loggers = cfg.get('loggers')
             if '__name__' in loggers:
                 loggers[log_name] = loggers.pop('__name__')
+
+                # add logging to the console if env var is set
+                log_to_console = 'AUTOMINE_LOG_TO_CONSOLE' in os.environ
+                if log_to_console and 'console' in handlers:
+                    logger_handlers = loggers[log_name].get('handlers')
+                    if logger_handlers:
+                        logger_handlers.append('console')
+
             dictConfig(cfg)
     except Exception as err:  # pylint: disable=broad-except
         logging.basicConfig()
@@ -105,13 +112,13 @@ def _configure_logger():
 
 
 def main():
-    """The command line entry point """
+    """The command-line entry point"""
     try:
         _configure_logger()
         perform_status_check()
         return 0
     except Exception:  # pylint: disable=broad-except
-        _LOG.error('could not perform overclock', exc_info=True)
+        _LOG.error('could not perform GPU health check', exc_info=True)
         return 1
 
 

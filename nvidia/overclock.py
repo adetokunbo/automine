@@ -1,12 +1,10 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """A module that execute commands to overclock nvidia chips.
 
-Prequisites: overclock values should be present in ~/.automine/automine_config.json
-or in a file specified as an argument
+Prerequisites: overclock values should be present in
+~/.automine/automine_config.json or in a file specified as an argument
 
 """
-
-from __future__ import print_function
 
 import json
 import logging
@@ -45,9 +43,10 @@ def perform_overclock(cfgs):
     """Perform the overclock."""
     gpus_with_index = subprocess.check_output(_LIST_GPUS_CMD.split())
     one_gpu_script = _sibling_path('overclock_one_gpu.sh')
-    for (name, sub_device,
-         index) in [l.split(', ') for l in gpus_with_index.splitlines()]:
+    lines = gpus_with_index.splitlines()
+    for (name, sub_device, index) in [l.decode().split(', ') for l in lines]:
         index = index.strip()
+        _LOG.info("name is %s, index is %s", name, index)
         sub_device_spec = 'pci.sub_device_id:' + sub_device
         by_name = cfgs.get(name)
         by_spec = cfgs.get(sub_device_spec)
@@ -58,8 +57,9 @@ def perform_overclock(cfgs):
             the_cfg = by_spec or by_name
             child_env = dict(os.environ)
             child_env['NVD_GPU_INDEX'] = index
-            for env_name, value in iter(the_cfg.items()):
-                child_env["NVD_{0}".format(env_name.upper())] = str(value)
+            for env_name, value in iter(list(the_cfg.items())):
+                child_env["NVD_{0}".format(env_name.upper())] = str.format(
+                    "{}", value)
             headline = "updating gpu{:02d} ({}/{})".format(
                 int(index), name, sub_device_spec)
             _info(
@@ -67,7 +67,7 @@ def perform_overclock(cfgs):
                     one_gpu_script,
                     executable='/bin/bash',
                     env=child_env,
-                    shell=True),
+                    shell=True).decode(),
                 headline=headline)
 
 
@@ -92,8 +92,8 @@ def _cfg_path(argv):
 def _configure_logger():
     """Configures logging
 
-    logging_config.json should have been placed in the directory AUTOMINE_LOG_DIR,
-    to which this process must have read and write access
+    logging_config.json should have been placed in the directory
+    AUTOMINE_LOG_DIR, to which this process must have read and write access
 
     """
     try:
@@ -101,9 +101,9 @@ def _configure_logger():
         log_name = _log_name()
         cfg_path = os.path.join(log_dir, 'logging_config.json')
         with open(cfg_path) as src:
-            cfg = json.load(src, 'utf8')
+            cfg = json.load(src)
             handlers = cfg.get('handlers')
-            for handler in iter(handlers.itervalues()):
+            for handler in iter(handlers.values()):
                 filename = handler.get('filename')
                 if filename:
                     filename = filename.replace('{{AUTOMINE_LOG_DIR}}',
@@ -113,6 +113,14 @@ def _configure_logger():
             loggers = cfg.get('loggers')
             if '__name__' in loggers:
                 loggers[log_name] = loggers.pop('__name__')
+
+                # add logging to the console if env var is set
+                log_to_console = 'AUTOMINE_LOG_TO_CONSOLE' in os.environ
+                if log_to_console and 'console' in handlers:
+                    logger_handlers = loggers[log_name].get('handlers')
+                    if logger_handlers:
+                        logger_handlers.append('console')
+
             dictConfig(cfg)
     except Exception as err:  # pylint: disable=broad-except
         logging.basicConfig()

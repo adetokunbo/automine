@@ -5,6 +5,9 @@
         "simple": {
             "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
             "datefmt": "%Y-%m-%d %H:%M:%S"
+        },
+        "syslog": {
+            "format": "%(name)s - %(levelname)s - %(message)s"
         }
     },
 
@@ -23,13 +26,19 @@
             "backupCount": 10,
             "filename": "{{AUTOMINE_LOG_DIR}}/{{__name__}}.log",
             "encoding": "utf-8"
+        },
+        "sys-logger6": {
+            "class": "logging.handlers.SysLogHandler",
+            "address": "/dev/log",
+            "facility": "local6",
+            "formatter": "syslog"
         }
     },
 
     "loggers": {
         "__name__": {
             "level": "INFO",
-            "handlers": ["console", "rotate_16mb"]
+            "handlers": ["sys-logger6", "rotate_16mb"]
         }
     }
 }
