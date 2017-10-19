@@ -42,17 +42,30 @@ def _as_timestamp(now):
 _CFG_MESSAGE = u"config: {} == {}"
 
 
+def _get_fallback_pool():
+    """Obtain the optional fallback_pool host value"""
+    got = os.environ.get('FALLBACK_POOL')
+    return got.split(':')[0] if got else ""
+
+
+_FALLBACK_PLACEHOLDER = '${FALLBACK_POOL}'
+
+
 def read_cfg(cfg_path):
     """Load the scan cfg"""
     try:
-        fallback_pool = os.environ['FALLBACK_POOL']
-        fallback_pool_host = fallback_pool.split(':')[0]
+        fallback_pool_host = _get_fallback_pool()
+        logged_fallback_host = fallback_pool_host or "NOT SET"
+        _info(_CFG_MESSAGE.format('FALLBACK_POOL', logged_fallback_host))
         automine_alert_dir = os.environ['AUTOMINE_ALERT_DIR']
         _info(_CFG_MESSAGE.format('AUTOMINE_ALERT_DIR', automine_alert_dir))
-        _info(_CFG_MESSAGE.format('FALLBACK_POOL', fallback_pool_host))
         raw_dict = json.load(open(cfg_path))
         cfg_dict = {}
         for key, value in iter(list(raw_dict.items())):
+            # ignore configuration to scan for submissions to the
+            # fallback_pool_host if the fallback_pool env variable is unset
+            if _FALLBACK_PLACEHOLDER in key and not fallback_pool_host:
+                continue
             new_key = key.replace("${FALLBACK_POOL}", fallback_pool_host)
             new_value = value.replace("${AUTOMINE_ALERT_DIR}",
                                       automine_alert_dir)

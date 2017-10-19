@@ -75,11 +75,24 @@ def _show_shell_exports(the_cfg):
     return " ".join(["export"] + as_exports)
 
 
+def _host_from(host_and_port):
+    """Obtain the hostname from a host and port spec"""
+    return host_and_port.split(':')[0]
+
+
 def _show_ethminer_exports(the_cfg):
     """Generate text to declare the configured ethminer export variables in a bash shell"""
     ethminer_cfg = _get_sub_cfg('ethminer', the_cfg)
-    fallback_pool_var = "FALLBACK_POOL={}".format(ethminer_cfg[
-        'fallback-pool'])
+    main_, fallback = [ethminer_cfg[x + '-pool'] for x in ('main', 'fallback')]
+
+    # don't set the fallback_host env variable if the main and fallback are the
+    # same hostname
+    if _host_from(main_) == _host_from(fallback):
+        if not 'environment' in ethminer_cfg:
+            return ""
+        return _show_shell_exports(the_cfg)
+
+    fallback_pool_var = "FALLBACK_POOL={}".format(fallback)
     if not 'environment' in ethminer_cfg:
         return "export " + fallback_pool_var
     return _show_shell_exports(ethminer_cfg) + " " + fallback_pool_var
