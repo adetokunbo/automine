@@ -53,12 +53,13 @@ build_ethminer() {
 }
 
 cp_to_bin() {
+    $BIN_DIR/automine_run minerctl stop || /bin/true
     cp -v $REPO_DIR/ethminer/build/ethminer/ethminer $BIN_DIR/ethminer
+    $BIN_DIR/automine_run minerctl restart
 }
 
 add_symlinks() {
     local rig_dir=$(dirname $SCRIPT_DIR)/$RIG_TYPE
-    ln -sf ${rig_dir}/launch_screen_session.sh $BIN_DIR/mine_in_a_screen
     [ -f ${rig_dir}/add_symlinks.sh ] && source ${rig_dir}/add_symlinks.sh
 }
 
