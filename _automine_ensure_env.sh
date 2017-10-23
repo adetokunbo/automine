@@ -38,7 +38,12 @@ then
     exit
 fi
 
-if [ "${USE_PUBLIC:=false}" = true ]; then
+# Check if use_public is set either by .automine/.use_public or by environment variable
+use_public=0
+[[ ${USE_PUBLIC:-'unset'} == "unset" ]] || use_public=1
+[[ -f ~/.automine/.use_public ]] && use_public=1
+
+if (( $use_public==1 )); then
 	SSH_USER="${RIG_USER}@${PUBLIC_HOSTNAME}"
 	SSH_PORT=${PUBLIC_SSH_PORT:=0}
 	(( ${SSH_PORT} == 0 )) && SSH_PORT=${LOCAL_SSH_PORT:=22}
